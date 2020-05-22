@@ -1,4 +1,4 @@
-# Gateway Mensageiro - Projeto
+# Sistema de Atendimento Chat Multicanal
 
 ## Descrição
 Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado através de Bot e distribuição interna para equipes de atendentes.
@@ -10,14 +10,18 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 - Serviço responsável pela comunicação com API
 - Serviço responsável pela comunicação com Web - Interações
 
-## Tecnologias 
+## Stack Tecnológico 
+- Laravel
 - PHP 7.3
 - Node 10
 - VueJS
 - PostgreSQL
-- Laravel
 - Socket.IO
 - Bootstrap
+
+## Documentação
+- [Canvas MVP](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/Canvas_MVP.pdf)
+- [Fluxo Sistema](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoAplicacao.png)
 
 ## Autor
 - Roger Pitigliani
