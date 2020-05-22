@@ -22,7 +22,7 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 ## Documentação
 - [Canvas MVP](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/Canvas_MVP.pdf)
 - [Fluxo Sistema](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoAplicacao.png)
-- [Diagrama ER]()
+- [Diagrama ER](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/DiagramaER.PNG)
 - [Casos de Uso](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/DiagramaCasosDeUso.png)
 
 ## Autor
