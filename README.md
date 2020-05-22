@@ -24,6 +24,7 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 - [Fluxo Sistema](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoAplicacao.png)
 - [Diagrama ER](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/DiagramaER.PNG)
 - [Casos de Uso](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/DiagramaCasosDeUso.png)
+- [Arquitetura Aplicação](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoInternoAplicacao.png)
 
 ## Autor
 - Roger Pitigliani
