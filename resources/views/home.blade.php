@@ -5,16 +5,15 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header text-center">Sistema de Atendimento Chat Multicanal</div>
 
-                <div class="card-body">
+                <div class="card-body text-center" >
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                    <img src="{{ asset('img/bot_imagem.jpeg') }}" width="500">
                 </div>
             </div>
         </div>

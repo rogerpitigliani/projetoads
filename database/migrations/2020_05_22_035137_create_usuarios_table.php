@@ -15,9 +15,9 @@ class CreateUsuariosTable extends Migration
     {
         Schema::create('usuario', function (Blueprint $table) {
             $table->bigIncrements("id");
-            $table->string("nome", 100);
+            $table->string("name", 100);
             $table->string("login", 30);
-            $table->string("password", 50);
+            $table->string("password", 200);
 
             $table->boolean("admin")->default(false);
             $table->boolean("supervisor")->default(false);
@@ -27,7 +27,8 @@ class CreateUsuariosTable extends Migration
             $table->boolean("pausa")->default(false);
             $table->boolean("chat")->default(false);
 
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
 
             $table->timestamps();

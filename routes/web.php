@@ -14,13 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->redirectTo('home');
 });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => ['auth']], function () {
+
+    Route::resource('usuario', 'UsuarioController');
+    Route::resource('equipe', 'EquipeController');
+    Route::resource('apiconfig', 'ApiConfigController');
+    Route::resource('botconfig', 'BotConfigController');
+    Route::resource('equipe', 'EquipeController');
+});
