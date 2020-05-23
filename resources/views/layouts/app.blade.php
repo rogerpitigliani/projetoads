@@ -18,12 +18,17 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ asset('img/icon.png') }}" />
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+
+        @auth
+
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
+                    <img src="{{ asset('img/icon.png') }}" width="50">
                     {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -34,7 +39,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 
-                        <li class="nav-item">
+                        <li class="nav-item active">
                             <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
                         </li>
 
@@ -102,9 +107,14 @@
             </div>
         </nav>
 
+        @endauth
+
         <main class="py-4">
             @yield('content')
         </main>
+    </div>
+    <div class="footer">
+        <p>Desenvolvido por Roger Pitigliani - <a href="https://wa.me/5551982464536"><i class="fab fa-whatsapp"> 51 982464536</i></a></p>
     </div>
 </body>
 </html>

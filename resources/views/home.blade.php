@@ -4,8 +4,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header text-center">Sistema de Atendimento Chat Multicanal</div>
+            <div class="card border-primary ">
+                <div class="card-header bg-primary text-white text-center">Sistema de Atendimento Chat Multicanal</div>
 
                 <div class="card-body text-center" >
                     @if (session('status'))
@@ -13,7 +13,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <img src="{{ asset('img/bot_imagem.jpeg') }}" width="500">
+                    <img src="{{ asset('img/bot_imagem.png') }}" width="400">
                 </div>
             </div>
         </div>
