@@ -26,6 +26,10 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 - [Casos de Uso](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/DiagramaCasosDeUso.png)
 - [Arquitetura Aplicação](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoInternoAplicacao.png)
 
+## Acesso ao Sistema - Demo
+- [projetoads.comunicall.com.br](http://projetoads.comunicall.com.br)
+- Login: admin / Senha: 10203040
+
 ## Autor
 - Roger Pitigliani
 - [Twitter - @rogerpitigliani](https://twitter.com/rogerpitigliani)
