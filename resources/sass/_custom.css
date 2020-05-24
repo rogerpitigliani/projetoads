@@ -1,11 +1,18 @@
 .footer {
         z-index: 9999;
         position: fixed;
+        height: 15px;
         left: 0;
         bottom: 0;
         width: 100%;
         font-size: 10px;
-        color: #438AFE;
+        color: #FFF;
         text-align: center;
         padding: 0;
+        background-color: #438AFE;
+}
+
+.footer a, .footer a:hover {
+    text-decoration: none;
+    color: #FFF;
 }
