@@ -14,7 +14,8 @@ class ApiConfigController extends Controller
      */
     public function index()
     {
-        //
+        $titulo = "Configurações da API";
+        return view('configs/apiconfig', compact('titulo'));
     }
 
     /**

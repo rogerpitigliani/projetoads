@@ -14,7 +14,8 @@ class EquipeController extends Controller
      */
     public function index()
     {
-        //
+        $titulo = "Equipes";
+        return view('usuario/equipe', compact('titulo'));
     }
 
     /**

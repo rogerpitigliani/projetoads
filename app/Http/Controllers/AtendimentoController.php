@@ -14,7 +14,8 @@ class AtendimentoController extends Controller
      */
     public function index()
     {
-        //
+        $titulo = "Atendimento";
+        return view('atendimento/atendimento', compact('titulo'));
     }
 
     /**

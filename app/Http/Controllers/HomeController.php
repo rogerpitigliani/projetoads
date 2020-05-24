@@ -23,6 +23,9 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+        // dd(request()->segment(1));
+
         return view('home');
     }
 }

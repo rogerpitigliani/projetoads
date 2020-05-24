@@ -14,7 +14,8 @@ class BotConfigController extends Controller
      */
     public function index()
     {
-        //
+        $titulo = "Configurações de Atendimento BOT";
+        return view('configs/botconfig', compact('titulo'));
     }
 
     /**

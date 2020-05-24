@@ -22,11 +22,17 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 
-Route::group(['middleware' => ['auth']], function () {
-
+Route::group(['prefix' => 'usuario', 'middleware' => ['auth']], function () {
     Route::resource('usuario', 'UsuarioController');
     Route::resource('equipe', 'EquipeController');
+});
+
+Route::group(['prefix' => 'configs', 'middleware' => ['auth']], function () {
     Route::resource('apiconfig', 'ApiConfigController');
     Route::resource('botconfig', 'BotConfigController');
-    Route::resource('equipe', 'EquipeController');
+});
+
+Route::group(['prefix' => 'atendimento', 'middleware' => ['auth']], function () {
+    Route::resource('atendimento', 'AtendimentoController');
+    // Route::resource('botconfig', 'BotConfigController');
 });

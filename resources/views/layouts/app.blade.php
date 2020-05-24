@@ -39,33 +39,32 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
+                        <li class="nav-item {{ (request()->segment(1) == 'home') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('home') }}"><i class="fas fa-home"></i> Home</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-comment"></i> Atendimento</a>
+                        <li class="nav-item  {{ (request()->segment(1) == 'atendimento') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('atendimento.index') }}"><i class="fas fa-comment"></i> Atendimento</a>
                         </li>
 
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown  {{ (request()->segment(1) == 'usuario') ? 'active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-users-cog"></i> Usuários
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="#">Usuários</a>
-                              <a class="dropdown-item" href="#">Equipes</a>
+                              <a class="dropdown-item" href="{{ route('usuario.index') }}"><i class="fas fa-user-tie"></i> Usuários</a>
+                              <a class="dropdown-item" href="{{ route('equipe.index') }}"><i class="fas fa-users"></i> Equipes</a>
                             </div>
                         </li>
 
 
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown  {{ (request()->segment(1) == 'configs') ? 'active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-tools"></i> Configurações
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="#">Api Configuração</a>
-                              <a class="dropdown-item" href="#">Bot - Atendimento Inicial</a>
-                              <a class="dropdown-item" href="#"></a>
+                              <a class="dropdown-item" href="{{ route('apiconfig.index') }}"><i class="fas fa-cloud"></i> Api Configuração</a>
+                              <a class="dropdown-item" href="{{ route('botconfig.index') }}"><i class="fas fa-robot"></i> Bot - Atendimento Inicial</a>
                             </div>
                         </li>
 
@@ -93,7 +92,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                                     <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Usuario;
 use Illuminate\Http\Request;
+use App\Http\Resources\User as UserResource;
 
 class UsuarioController extends Controller
 {
@@ -14,7 +16,8 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        //
+        $titulo = "Usuários";
+        return view('usuario/usuario', compact('titulo'));
     }
 
     /**
@@ -46,7 +49,9 @@ class UsuarioController extends Controller
      */
     public function show(Usuario $usuario)
     {
-        //
+        // $u = User::find($usuario);
+        // return (new UserResource($u))->response()->statusCode(200);
+        return response()->json($usuario);
     }
 
     /**
