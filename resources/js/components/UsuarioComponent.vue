@@ -174,7 +174,7 @@
                     </b-col>
                   </b-row>
                   <b-row>
-                    <b-col>
+                    <!-- <b-col>
                       <b-form-group
                         id="group-admin"
                         label="Administrador"
@@ -185,20 +185,34 @@
                           <b-form-checkbox :value="false">Não</b-form-checkbox>
                         </b-form-checkbox-group>
                       </b-form-group>
-                    </b-col>
+                    </b-col>-->
                     <b-col>
                       <b-form-group
-                        id="group-supervisor"
-                        label="Supervisor"
-                        label-for="checkboxes-supervisor"
+                        id="group-permissoes"
+                        label="Pemissões/Perfil"
+                        label-for="checkboxes-permissoes"
                       >
-                        <b-form-checkbox-group v-model="form.supervisor" id="checkboxes-supervisor">
-                          <b-form-checkbox :value="true">Sim</b-form-checkbox>
-                          <b-form-checkbox :value="false">Não</b-form-checkbox>
-                        </b-form-checkbox-group>
+                        <b-form-checkbox
+                          switch
+                          v-model="form.admin"
+                          id="check-admin"
+                          size="lg"
+                        >Administrador</b-form-checkbox>
+                        <b-form-checkbox
+                          switch
+                          v-model="form.supervisor"
+                          id="check-supervisor"
+                          size="lg"
+                        >Supervisor</b-form-checkbox>
+                        <b-form-checkbox
+                          switch
+                          v-model="form.atendente"
+                          id="check-atendente"
+                          size="lg"
+                        >Atendente</b-form-checkbox>
                       </b-form-group>
                     </b-col>
-                    <b-col>
+                    <!-- <b-col>
                       <b-form-group
                         id="group-atendente"
                         label="Atendente"
@@ -209,7 +223,7 @@
                           <b-form-checkbox :value="false">Não</b-form-checkbox>
                         </b-form-checkbox-group>
                       </b-form-group>
-                    </b-col>
+                    </b-col>-->
                   </b-row>
                   <!-- <b-row>
                     <b-col>{{ form }}</b-col>
@@ -270,15 +284,19 @@ export default {
       form: {
         id: null,
         login: null,
-        senha: null,
-        empresa: null,
+        name: null,
         password: null,
+        password_confirmation: null,
         admin: false,
         supervisor: false,
         atendente: false
       },
       form_vazio: {},
-      errors: null
+      errors: null,
+      options_checkbox: [
+        { text: "Sim", value: true },
+        { text: "Não", value: false }
+      ]
     };
   },
   methods: {
@@ -345,8 +363,18 @@ export default {
       var _this = this;
       _this.errors = null;
       Object.keys(_this.form).forEach(function(key, index) {
-        _this.form[key] = null;
+        if (key == "admin") {
+          _this.form[key] = false;
+        } else if (key == "atendente") {
+          _this.form[key] = false;
+        } else if (key == "supervisor") {
+          _this.form[key] = false;
+        } else {
+          _this.form[key] = null;
+        }
       });
+
+      // console.log("RESET", _this.form);
     },
     loadData: async function() {
       var _this = this;
@@ -370,7 +398,7 @@ export default {
         ? this.dataArray.filter(
             item =>
               item.login.includes(this.filter) ||
-              item.empresa.includes(this.filter) ||
+              item.nome.includes(this.filter) ||
               item.id == this.filter
           )
         : this.dataArray;

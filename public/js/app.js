@@ -2843,6 +2843,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["titulo", "url", "url_show", "url_update", "url_store", "sort_by"],
   data: function data() {
@@ -2890,15 +2904,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       form: {
         id: null,
         login: null,
-        senha: null,
-        empresa: null,
+        name: null,
         password: null,
+        password_confirmation: null,
         admin: false,
         supervisor: false,
         atendente: false
       },
       form_vazio: {},
-      errors: null
+      errors: null,
+      options_checkbox: [{
+        text: "Sim",
+        value: true
+      }, {
+        text: "Não",
+        value: false
+      }]
     };
   },
   methods: {
@@ -3060,8 +3081,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       _this.errors = null;
       Object.keys(_this.form).forEach(function (key, index) {
-        _this.form[key] = null;
-      });
+        if (key == "admin") {
+          _this.form[key] = false;
+        } else if (key == "atendente") {
+          _this.form[key] = false;
+        } else if (key == "supervisor") {
+          _this.form[key] = false;
+        } else {
+          _this.form[key] = null;
+        }
+      }); // console.log("RESET", _this.form);
     },
     loadData: function () {
       var _loadData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
@@ -3111,7 +3140,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       return this.filter ? this.dataArray.filter(function (item) {
-        return item.login.includes(_this2.filter) || item.empresa.includes(_this2.filter) || item.id == _this2.filter;
+        return item.login.includes(_this2.filter) || item.nome.includes(_this2.filter) || item.id == _this2.filter;
       }) : this.dataArray;
     }
   }
@@ -83412,17 +83441,20 @@ var render = function() {
                                             "b-form-group",
                                             {
                                               attrs: {
-                                                id: "group-admin",
-                                                label: "Administrador",
-                                                "label-for": "checkboxes-admin"
+                                                id: "group-permissoes",
+                                                label: "Pemissões/Perfil",
+                                                "label-for":
+                                                  "checkboxes-permissoes"
                                               }
                                             },
                                             [
                                               _c(
-                                                "b-form-checkbox-group",
+                                                "b-form-checkbox",
                                                 {
                                                   attrs: {
-                                                    id: "checkboxes-admin"
+                                                    switch: "",
+                                                    id: "check-admin",
+                                                    size: "lg"
                                                   },
                                                   model: {
                                                     value: _vm.form.admin,
@@ -83436,47 +83468,16 @@ var render = function() {
                                                     expression: "form.admin"
                                                   }
                                                 },
-                                                [
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: true } },
-                                                    [_vm._v("Sim")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: false } },
-                                                    [_vm._v("Não")]
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ],
-                                        1
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "b-col",
-                                        [
-                                          _c(
-                                            "b-form-group",
-                                            {
-                                              attrs: {
-                                                id: "group-supervisor",
-                                                label: "Supervisor",
-                                                "label-for":
-                                                  "checkboxes-supervisor"
-                                              }
-                                            },
-                                            [
+                                                [_vm._v("Administrador")]
+                                              ),
+                                              _vm._v(" "),
                                               _c(
-                                                "b-form-checkbox-group",
+                                                "b-form-checkbox",
                                                 {
                                                   attrs: {
-                                                    id: "checkboxes-supervisor"
+                                                    switch: "",
+                                                    id: "check-supervisor",
+                                                    size: "lg"
                                                   },
                                                   model: {
                                                     value: _vm.form.supervisor,
@@ -83491,47 +83492,16 @@ var render = function() {
                                                       "form.supervisor"
                                                   }
                                                 },
-                                                [
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: true } },
-                                                    [_vm._v("Sim")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: false } },
-                                                    [_vm._v("Não")]
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ],
-                                        1
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "b-col",
-                                        [
-                                          _c(
-                                            "b-form-group",
-                                            {
-                                              attrs: {
-                                                id: "group-atendente",
-                                                label: "Atendente",
-                                                "label-for":
-                                                  "checkboxes-atendente"
-                                              }
-                                            },
-                                            [
+                                                [_vm._v("Supervisor")]
+                                              ),
+                                              _vm._v(" "),
                                               _c(
-                                                "b-form-checkbox-group",
+                                                "b-form-checkbox",
                                                 {
                                                   attrs: {
-                                                    id: "checkboxes-atendente"
+                                                    switch: "",
+                                                    id: "check-atendente",
+                                                    size: "lg"
                                                   },
                                                   model: {
                                                     value: _vm.form.atendente,
@@ -83545,20 +83515,7 @@ var render = function() {
                                                     expression: "form.atendente"
                                                   }
                                                 },
-                                                [
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: true } },
-                                                    [_vm._v("Sim")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-checkbox",
-                                                    { attrs: { value: false } },
-                                                    [_vm._v("Não")]
-                                                  )
-                                                ],
-                                                1
+                                                [_vm._v("Atendente")]
                                               )
                                             ],
                                             1

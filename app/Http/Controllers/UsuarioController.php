@@ -83,9 +83,9 @@ class UsuarioController extends Controller
         $user->name = $request->get('name');
         $user->login = $request->get('login');
         $user->password = Hash::make(trim($request->get('password')));
-        $usuario->admin = $request->get('admin');
-        $usuario->supervisor = $request->get('supervisor');
-        $usuario->atendente = $request->get('atendente');
+        $user->admin = $request->get('admin');
+        $user->supervisor = $request->get('supervisor');
+        $user->atendente = $request->get('atendente');
         $user->save();
 
         return response()->json([
