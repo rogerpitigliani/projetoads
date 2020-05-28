@@ -23,6 +23,8 @@
 <body>
     <div id="app">
 
+        <notifications style="bottom: 15px !important" group="alert" position="bottom right"></notifications>
+
         @auth
 
         <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">

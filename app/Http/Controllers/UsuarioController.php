@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Usuario;
 use Illuminate\Http\Request;
-use App\Http\Resources\User as UserResource;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UsuarioController extends Controller
 {
@@ -14,11 +16,17 @@ class UsuarioController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $titulo = "Usuários";
-        $users = User::paginate(10);
-        return view('usuario/usuario', compact('titulo', 'users'));
+        if ($request->get('datatype') == 'json') {
+            return response()->json(User::all());
+        } elseif ($request->get('datatype') == 'list') {
+            $regs = User::select('id as value', 'login as text')->orderBy('login', 'asc')->get();
+            return response()->json($regs);
+        } else {
+            $titulo = "Usuários";
+            return view("usuario/usuario", compact('titulo'));
+        }
     }
 
     /**
@@ -39,7 +47,51 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'password' => [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ],
+            'password_confirmation' => 'required_with:password|same:password|min:6',
+            'login' => [
+                'required',
+                'string',
+                'min:4',
+                'max:50',
+                Rule::unique('usuario')
+            ],
+            'name' => [
+                'required',
+                'string',
+                'min:4',
+                'max:100',
+            ],
+            'email' => 'email'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->getMessages(), 422);
+        }
+
+        $user = new User();
+        $user->name = $request->get('name');
+        $user->login = $request->get('login');
+        $user->password = Hash::make(trim($request->get('password')));
+        $usuario->admin = $request->get('admin');
+        $usuario->supervisor = $request->get('supervisor');
+        $usuario->atendente = $request->get('atendente');
+        $user->save();
+
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'Registro Criado'
+        ]);
     }
 
     /**
@@ -50,8 +102,6 @@ class UsuarioController extends Controller
      */
     public function show(Usuario $usuario)
     {
-        // $u = User::find($usuario);
-        // return (new UserResource($u))->response()->statusCode(200);
         return response()->json($usuario);
     }
 
@@ -75,7 +125,54 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, Usuario $usuario)
     {
-        //
+        $rules = [
+
+            'login' => [
+                'required',
+                'string',
+                'min:4',
+                'max:50',
+                Rule::unique('usuario')->ignore($usuario->id)
+            ],
+            'name' => [
+                'required',
+                'string',
+                'min:4',
+                'max:100',
+            ],
+            'email' => 'email'
+        ];
+
+        if ($request->get('password')) {
+            $rules['password'] = [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ];
+            $rules['password_confirmation'] = 'required_with:password|same:password|min:6';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->getMessages(), 422);
+        }
+
+        $usuario->name = $request->get('name');
+        $usuario->login = $request->get('login');
+        $usuario->password = Hash::make(trim($request->get('password')));
+        $usuario->admin = $request->get('admin');
+        $usuario->supervisor = $request->get('supervisor');
+        $usuario->atendente = $request->get('atendente');
+        $usuario->save();
+
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'Registro Atualizado'
+        ]);
     }
 
     /**

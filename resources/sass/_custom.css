@@ -16,3 +16,25 @@
     text-decoration: none;
     color: #FFF;
 }
+
+
+.column-action{
+    width: 100px;
+    text-align: right;
+}
+.column-id{
+    width: 100px;
+    text-align: left;
+}
+
+.table td {
+    padding: 0.3rem !important;
+}
+
+.tab-content{
+    min-height: 200px !important;
+}
+
+.custom-file-input:lang(en) ~ .custom-file-label::after {
+    content: 'Procurar';
+}

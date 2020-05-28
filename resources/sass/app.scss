@@ -3,14 +3,22 @@
 
 // Variables
 @import 'variables';
-@import 'custom';
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
-@import 'bootstrap';
 
-// Font Awesome
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+// Icons
+@import '~@fortawesome/fontawesome-free/scss/brands';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 @import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+
+// Bootstrap Vue
+@import 'node_modules/bootstrap/scss/bootstrap';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
+// Custom Bootstrap
+@import 'bootstrap';
+
+// Custom CSS
+@import 'custom';
