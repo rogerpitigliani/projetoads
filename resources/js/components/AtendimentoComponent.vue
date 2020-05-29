@@ -1,14 +1,65 @@
 <template>
   <b-container>
+    <b-row class="rowinfo">
+      <b-col>
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                >Atendidos (Hoje)</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-col>
+      <b-col>
+        <div class="card border-left-danger shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Na Fila</div>
+                <div class="h5 mb-0 font-weight-bold text-danger">{{clientes_nafila}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-bell fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-col>
+
+      <b-col cols="6">
+        <div class="h-100 text-right">
+          <b-button class="h-100" variant="warning" size="lg" @click="recebeAtendimento">
+            <i class="fas fa-user-plus"></i> Receber Cliente
+          </b-button>
+
+          <b-button
+            :disabled="!ematendimento"
+            class="h-100"
+            variant="success"
+            size="lg"
+            @click="encerrarAtendimento"
+          >
+            <i class="fas fa-times-circle"></i> Encerrar
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
+
     <b-row class="h-100">
       <b-col class="h-100">
-        <b-card
-          :header="titulo + ' - Pedro (51) 98273-2122'"
-          header-bg-variant="primary"
-          header-text-variant="white"
-          class="h-100"
-          no-body
-        >
+        <b-card no-body>
+          <b-card-header header-bg-variant="primary" header-text-variant="white" class="h-100">
+            <i class="fas fa-comments"></i>
+            {{ titulo_atendimento }}
+          </b-card-header>
           <div id="messages_content" ref="msgcontent">
             <ul class="chat-list">
               <template v-for="msg in mensagens">
@@ -92,7 +143,10 @@ export default {
     return {
       message: "",
       shouldScroll: false,
-
+      clientes_nafila: 12,
+      nomecliente: null,
+      ematendimento: false,
+      titulo_atendimento: "Disponível",
       mensagens: [],
       mensagens2: [
         {
@@ -170,6 +224,27 @@ export default {
     };
   },
   methods: {
+    encerrarAtendimento: function() {
+      alert("*** NAO IMPLEMENTADO ***");
+    },
+
+    recebeAtendimento: async function() {
+      var _this = this;
+      _this.mensagens = _this.mensagens2;
+      _this.clientes_nafila--;
+      _this.nomecliente = "Pedro";
+      _this.ematendimento = true;
+      _this.titulo_atendimento =
+        _this.titulo + " Pedro (51) 98246-4536 - ** SUPORTE **";
+      await _this.$nextTick();
+      _this.scrollToBottom();
+
+      setTimeout(async function() {
+        await _this.$nextTick();
+        _this.scrollToBottom();
+        console.log("Rolando");
+      }, 1200);
+    },
     sendMessage: async function() {
       if (this.message) {
         this.mensagens.push({
@@ -209,7 +284,6 @@ export default {
     console.log("Component mounted.");
     var _this = this;
     setTimeout(async function() {
-      _this.mensagens = _this.mensagens2;
       await _this.$nextTick();
       _this.scrollToBottom();
       console.log("Rolando");
@@ -252,7 +326,7 @@ export default {
   -webkit-border-radius: 50px;
   -moz-border-radius: 50px;
   border-radius: 50px;
-  background: #5a99ee;
+  background: #5a9aee;
   display: inline-block;
   padding: 10px 20px;
   position: relative;
@@ -288,7 +362,7 @@ export default {
 .chat-list .in .chat-message:before {
   left: -12px;
   border-bottom: 20px solid transparent;
-  border-right: 20px solid #5a99ee;
+  border-right: 20px solid #5a9aee;
 }
 
 .chat-list .out .chat-img {
@@ -302,13 +376,13 @@ export default {
 }
 
 .chat-list .out .chat-message {
-  background: #fc6d4c;
+  background: #e45a23;
 }
 
 .chat-list .out .chat-message:before {
   right: -12px;
   border-bottom: 20px solid transparent;
-  border-left: 20px solid #fc6d4c;
+  border-left: 20px solid #e45a23;
 }
 
 .card .card-header:first-child {
@@ -318,5 +392,49 @@ export default {
 }
 body {
   height: 100%;
+}
+.border-left-primary {
+  border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-danger {
+  border-left: 0.25rem solid #f70606 !important;
+}
+.text-gray-300 {
+  color: #dddfeb !important;
+}
+.fa,
+.fas {
+  font-weight: 900;
+}
+.fa,
+.far,
+.fas {
+  font-family: "Font Awesome 5 Free";
+}
+.fa-2x {
+  font-size: 2em;
+}
+.fa,
+.fab,
+.fad,
+.fal,
+.far,
+.fas {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+.rowinfo {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
 }
 </style>
