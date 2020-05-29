@@ -167,7 +167,9 @@ class UsuarioController extends Controller
 
         $usuario->name = $request->get('name');
         $usuario->login = $request->get('login');
-        $usuario->password = Hash::make(trim($request->get('password')));
+        if ($request->get('password')) {
+            $usuario->password = Hash::make(trim($request->get('password')));
+        }
         $usuario->admin = $request->get('admin');
         $usuario->supervisor = $request->get('supervisor');
         $usuario->atendente = $request->get('atendente');
