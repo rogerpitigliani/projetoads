@@ -13,7 +13,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <img src="{{ asset('img/bot_imagem.png') }}" width="400">
+                    <img src="{{ asset('img/bot_imagem.png') }}" class="img-fluid" >
                 </div>
             </div>
         </div>

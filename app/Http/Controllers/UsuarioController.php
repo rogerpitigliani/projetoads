@@ -154,6 +154,10 @@ class UsuarioController extends Controller
                 'regex:/[@$!%*#?&]/', // must contain a special character
             ];
             $rules['password_confirmation'] = 'required_with:password|same:password|min:6';
+
+            if ($usuario->login == 'admin') {
+                return response()->json(['login' => ["Não permitido alterar senha do admin, ainda!"]], 422);
+            }
         }
 
         $validator = Validator::make($request->all(), $rules);
