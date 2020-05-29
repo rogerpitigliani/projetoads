@@ -20,15 +20,13 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('img/icon.png') }}" />
 </head>
+
 <body>
     <div id="app">
 
         <notifications style="bottom: 15px !important" group="alert" position="bottom right"></notifications>
 
         @auth
-
-
-
 
         <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
             <div class="container">
@@ -113,12 +111,24 @@
 
         @endauth
 
-        <main class="py-4">
+        <b-container fluid class="h-100">
             @yield('content')
-        </main>
+        </b-container>
+
     </div>
     <div class="footer">
         <p>Desenvolvido por Roger Pitigliani - <a href="https://wa.me/5551982464536"><i class="fab fa-whatsapp"> 51 982464536</i></a></p>
     </div>
 </body>
 </html>
+<style>
+    html {
+        height: 100%;
+    }
+    body {
+    min-height: 100%;
+    }
+</style>
+
+
+
