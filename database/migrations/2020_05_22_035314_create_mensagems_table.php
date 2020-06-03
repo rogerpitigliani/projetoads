@@ -16,16 +16,14 @@ class CreateMensagemsTable extends Migration
         Schema::create('mensagem', function (Blueprint $table) {
             $table->bigIncrements("id");
             $table->bigInteger("atendimento_id");
-            $table->string("tipo", 20)->default("recebida"); // recebida|enviada
+            $table->string("direcao", 20)->default("in"); // in/out
             $table->string("type", 50)->default("text/plain");
             $table->string("content", 250)->nullable();
             $table->string("to", 150)->nullable();
             $table->bigInteger("usuario_id")->nullable();
-            $table->bigInteger("classificacao_id")->nullable();
             $table->timestamps();
 
             $table->foreign("atendimento_id", "fk_msg_atendimento")->references("id")->on("atendimento");
-            $table->foreign("classificacao_id", "fk_msg_classificacao")->references("id")->on("classificacao");
             $table->foreign("usuario_id", "fk_msg_usuario")->references("id")->on("usuario");
         });
     }

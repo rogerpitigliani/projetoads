@@ -1,5 +1,5 @@
 {
-  "name": "chatserver",
+  "name": "chatservice",
   "version": "1.0.0",
   "description": "Aplicacao para integracao de chat multicanal",
   "main": "index.js",
@@ -7,5 +7,25 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Roger Winter Pitigliani",
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "Chat",
+    "Telegram",
+    "WhatsApp",
+    "Site",
+    "Blip.AI",
+    "Take.AI"
+  ],
+  "dependencies": {
+    "blip-sdk": "^8.0.0",
+    "config": "^3.3.1",
+    "express": "^4.17.1",
+    "lime-transport-websocket": "^2.0.3",
+    "nodemon": "^2.0.4",
+    "pg": "^8.2.1",
+    "socket.io": "^2.3.0"
+  }
 }

@@ -1,6 +1,8 @@
 <?php
 
+use App\Equipe;
 use App\User;
+use App\Usuario;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
@@ -33,6 +35,24 @@ class UsuarioSeeder extends Seeder
             $u->atendente = true;
             if (($i % 5) == 0) $u->supervisor = true;
             $u->save();
+        }
+
+        $eq = Equipe::first();
+        if (!$eq) {
+
+            $e = new Equipe();
+            $e->equipe = "Suporte";
+            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
+            $e->save();
+
+            $e->usuarios()->sync(1);
+
+            $e = new Equipe();
+            $e->equipe = "Comercial";
+            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
+            $e->save();
+
+            $e->usuarios()->sync(1);
         }
     }
 }
