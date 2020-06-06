@@ -20,11 +20,13 @@ class CreateMensagemsTable extends Migration
             $table->string("type", 50)->default("text/plain");
             $table->string("content", 250)->nullable();
             $table->string("to", 150)->nullable();
+            $table->bigInteger("contato_id")->nullable();
             $table->bigInteger("usuario_id")->nullable();
             $table->timestamps();
 
             $table->foreign("atendimento_id", "fk_msg_atendimento")->references("id")->on("atendimento");
             $table->foreign("usuario_id", "fk_msg_usuario")->references("id")->on("usuario");
+            $table->foreign("contato_id", "fk_msg_contato")->references("id")->on("contato");
         });
     }
 

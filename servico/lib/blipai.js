@@ -52,6 +52,8 @@ const init = () => {
             try {
                 let a = await db.get_atendimento_by_remoteid(message);
 
+                let ci = await contactInfo(message.from);
+
                 if (a.status == 'new') {
                     var msgmenu = {
                         type: "text/plain",
@@ -75,19 +77,19 @@ Por favor selecione o assunto desejado:
 
                     if (a.invalidas > 3) {
                         msg = `Ops!, Tentativas excedidas... :(
-                        Encerrando Atendimento..
-                        Tente novamente mais tarde...`;
+Encerrando Atendimento..
+Tente novamente mais tarde...`;
                         await db.atendimento_encerra_invalidas(a);
 
                     } else if (message.content.trim() == '1' || message.content.trim().toLowerCase() == 'suporte') {
                         msg = `Ok, entendi!
-                        Encaminhando para equipe de Suporte.
-                        Aguarde um momento! :)`;
+Encaminhando para equipe de Suporte.
+Aguarde um momento! :)`;
                         equipe_id = 1;
                     } else if (message.content.trim() == '2' || message.content.trim().toLowerCase() == 'comercial') {
                         msg = `Ok, entendi!
-                        Encaminhando para equipe Comercial.
-                        Aguarde um momento! :)`;
+Encaminhando para equipe Comercial.
+Aguarde um momento! :)`;
                         equipe_id = 2;
                     } else {
                         await db.atendimento_opcaoinvalida(a);
@@ -182,5 +184,49 @@ const sendMessage = (msg) => {
 }
 
 
+const contactInfo = (contact_id) => {
+
+    return new Promise(async (resolve, reject) => {
+
+
+        try {
+
+            var remote = contact_id.split('@');
+            var command_uri = 'lime://' + remote[1] + '/accounts/' + remote[0];
+            var command_to = 'postmaster@' + remote[1];
+
+            let command = {
+                id: Lime.Guid(),
+                method: "get",
+                uri: command_uri,
+                to: command_to,
+            }
+
+
+            console.log("command", command);
+
+            var response = await client.sendCommand(command);
+            if (response.resource) {
+                console.log(`Contato Blip`, response.resource);
+                var contato = await db.registra_contato(response);
+                console.log(`Contato DB`, contato);
+                return resolve(contato);
+            } else {
+                return resolve(null);
+            }
+
+
+        } catch (error) {
+            console.log("ERROR contact_info", error);
+            return reject(error);
+        }
+
+
+    })
+
+}
+
+
 exports.init = init;
 exports.sendMessage = sendMessage;
+exports.contactInfo = contactInfo;

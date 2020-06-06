@@ -23,6 +23,7 @@ class CreateAtendimentosTable extends Migration
             $table->timestamp("datahora_termino")->nullable();
             $table->bigInteger("equipe_id")->nullable();
             $table->bigInteger("usuario_id")->nullable();
+            $table->bigInteger("contato_id")->nullable();
             $table->string("remote_id", 200); // ID REMOTO DO CLIENTE
             $table->bigInteger("classificacao_id")->nullable();
             $table->integer("invalidas")->default(0);
@@ -31,6 +32,7 @@ class CreateAtendimentosTable extends Migration
 
             $table->foreign("classificacao_id", "fk_atendimento_classificacao")->references("id")->on("classificacao");
             $table->foreign("equipe_id", "fk_atendimento_equipe_id")->references("id")->on("equipe");
+            $table->foreign("contato_id", "fk_atendimento_contatoid")->references("id")->on("contato");
             $table->foreign("usuario_id", "fk_atendimento_usuario_id")->references("id")->on("usuario");
         });
     }

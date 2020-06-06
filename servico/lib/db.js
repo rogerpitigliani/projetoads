@@ -36,6 +36,43 @@ const atendimento_encerra_invalidas = (a) => {
     });
 }
 
+const registra_contato = (c) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+            let res = await pool.query(`SELECT * FROM contato WHERE identity = '${c.resource.identity}' LIMIT 1`);
+            if (res.rows.length > 0) {
+                let sql = `UPDATE contato
+                SET
+                full_name = '${c.resource.fullName}',
+                photo_uri = '${c.resource.photoUri}',
+                updated_at = CURRENT_TIMESTAMP::timestamp(0)
+                WHERE identity = '${c.resource.identity}'
+                RETURNING * `;
+                let retupd = await pool.query(sql);
+                return resolve(retupd.rows[0]);
+            } else {
+                let sql = `INSERT INTO contato (identity,full_name,source,photo_uri,created_at,updated_at)
+                VALUES
+                (
+                    '${c.resource.identity}',
+                    '${c.resource.fullName}',
+                    '${c.resource.source}',
+                    '${c.resource.photoUri}',
+                    CURRENT_TIMESTAMP::timestamp(0),
+                    CURRENT_TIMESTAMP::timestamp(0)
+                ) RETURNING * `;
+                let retadd = await pool.query(sql);
+                return resolve(retupd.rows[0]);
+            }
+        } catch (e) {
+
+        }
+    });
+}
+
+
+
 const get_atendimento_by_remoteid = (message) => {
 
     return new Promise(async (resolve, reject) => {
@@ -79,3 +116,4 @@ exports.atendimento_menu = atendimento_menu;
 exports.atendimento_fila = atendimento_fila;
 exports.atendimento_opcaoinvalida = atendimento_opcaoinvalida;
 exports.atendimento_encerra_invalidas = atendimento_encerra_invalidas;
+exports.registra_contato = registra_contato;
