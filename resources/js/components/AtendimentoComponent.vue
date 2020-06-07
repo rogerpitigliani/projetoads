@@ -137,8 +137,10 @@
 </template>
 
 <script>
+import socketio from "../socketio";
 export default {
-  props: ["titulo"],
+  mixins: [socketio],
+  props: ["titulo", "socket_host", "socket_port", "usuario_id"],
   data() {
     return {
       message: "",
@@ -288,6 +290,13 @@ export default {
       _this.scrollToBottom();
       console.log("Rolando");
     }, 1200);
+
+    _this.connect_io(
+      _this.socket_host,
+      _this.socket_port,
+      "chat",
+      _this.usuario_id
+    );
   }
 };
 </script>
