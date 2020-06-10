@@ -17,6 +17,7 @@ class CreateAtendimentosTable extends Migration
             $table->bigIncrements("id");
             $table->string("canal", 30); // facebook/site/whatsapp/telegram
             $table->string("status", 30); // new / bot / chat / end
+            $table->string("protocolo", 50);
             $table->timestamp("datahora_inicio")->useCurrent();
             $table->timestamp("datahora_fila")->nullable();
             $table->timestamp("datahora_atende")->nullable();
@@ -28,7 +29,10 @@ class CreateAtendimentosTable extends Migration
             $table->bigInteger("classificacao_id")->nullable();
             $table->integer("invalidas")->default(0);
             $table->boolean("finalizado")->default(false);
+            $table->timestamp("datahora_ultima_recebida")->useCurrent();
             $table->timestamps();
+
+            $table->index("protocolo", "idx_atendimento_protocolo");
 
             $table->foreign("classificacao_id", "fk_atendimento_classificacao")->references("id")->on("classificacao");
             $table->foreign("equipe_id", "fk_atendimento_equipe_id")->references("id")->on("equipe");

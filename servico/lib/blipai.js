@@ -11,6 +11,35 @@ const db = require("./db");
 var client = null;
 var connected = false;
 
+const start_check_timeout = () => {
+
+    setInterval(async function () {
+
+        if (!connected) return;
+
+        try {
+
+            var bc = await db.get_bot_configs();
+            if (!bc) {
+                console.log("BotConfig nao carregada");
+                return;
+            }
+            let ats = await db.get_atentimentos_expirados(bc.timeout_encerra);
+            for (var i = 0; i < ats.length; i++) {
+                let at = ats[i];
+                console.log("Finalizando Atendimento");
+                var msg = { type: "text/plain", content: bc.msg_encerramento_timeout, to: at.remote_id };
+                await db.encerrar_atendimento_timeout(at);
+                await sendMessage(msg);
+            }
+
+        } catch (e) {
+            console.log("Error on start_check_timeout ", e.message);
+        }
+
+    }, 5000);
+
+}
 
 const init = () => {
 
@@ -28,6 +57,8 @@ const init = () => {
             connected = true;
             //  console.log(client);
             // console.log("State", client.);
+
+            start_check_timeout();
 
         })
         .catch(function (err) {
@@ -47,71 +78,61 @@ const init = () => {
 
         message.direcao = 'in';
 
-        if (message.type == 'text/plain') {
+        // Existe Atendimento em Aberto pra esse id?
+        let a = await db.get_atendimento_by_remoteid(message);
+        console.log(`Atendimento para ${message.from}`, a);
 
-            try {
-                let a = await db.get_atendimento_by_remoteid(message);
+        var bc = await db.get_bot_configs();
 
-                let ci = await contactInfo(message.from);
+        // O Contato existe?
+        let ci = await contactInfo(message.from);
+        console.log(`Contato para ${message.from}`, a);
 
-                if (a.status == 'new') {
-                    var msgmenu = {
-                        type: "text/plain",
-                        content: `Bem Vindo ao ProjetoADS.
-Este é um sistema de demonstração!
-Por favor selecione o assunto desejado:
+        // Associa Contato ao Atendimento
+        if (ci) {
+            await db.associa_atendimento_contato(a, ci);
+        }
 
-1 - Suporte
-2 - Comercial
-`,
-                        to: message.from
-                    };
-                    var ret = await sendMessage(msgmenu);
-                    await db.atendimento_menu(a);
+        console.log("Status do Atendimento:", a.status);
+
+        if (a.status == 'new') {
+
+            await sendMessage({ type: "text/plain", content: bc.msg_inicial + '\n' + bc.msg_menu, to: message.from });
+            await db.atendimento_menu(a);
+
+        } else if (a.status == 'menu') {
+
+            var rb = null;
+            if (message.type == 'text/plain') {
+                rb = await db.get_resposta_bot(message);
+            }
+
+            if (rb) {
+                console.log("Resposta Encontrada", rb);
+
+                // PROCESSAR RESPOSTA VALIDA
+
+            } else {
+
+                // Não encontrada! Registra Invalida - Informa
+                await db.atendimento_opcaoinvalida(a);
+
+                if (a.invalidas == 2) {
+                    // Encerra, ja é a terceira - Informa (Excedeu 3 tentativas de opcao invalida)
+                    await db.atendimento_encerra_invalidas(a);
+                    await sendMessage({ type: "text/plain", content: bc.msg_encerramento_tentativas, to: message.from });
+                } else {
+                    await sendMessage({ type: "text/plain", content: bc.msg_invalid, to: message.from });
                 }
-
-                if (a.status == 'menu') {
-
-                    var msg = "Ops! Opção invalida, tente novamente!";
-                    var equipe_id = null;
-
-                    if (a.invalidas > 3) {
-                        msg = `Ops!, Tentativas excedidas... :(
-Encerrando Atendimento..
-Tente novamente mais tarde...`;
-                        await db.atendimento_encerra_invalidas(a);
-
-                    } else if (message.content.trim() == '1' || message.content.trim().toLowerCase() == 'suporte') {
-                        msg = `Ok, entendi!
-Encaminhando para equipe de Suporte.
-Aguarde um momento! :)`;
-                        equipe_id = 1;
-                    } else if (message.content.trim() == '2' || message.content.trim().toLowerCase() == 'comercial') {
-                        msg = `Ok, entendi!
-Encaminhando para equipe Comercial.
-Aguarde um momento! :)`;
-                        equipe_id = 2;
-                    } else {
-                        await db.atendimento_opcaoinvalida(a);
-                    }
-
-                    var respostamenu = { type: "text/plain", content: msg, to: message.from };
-                    var ret = await sendMessage(respostamenu);
-
-                }
-
-
-            } catch (e) {
-                console.log("Erro ", e.message);
             }
 
 
-
-
-
-
-
         }
+
+
+
+
+
     });
 
     client.addNotificationReceiver("received", function (notification) {
@@ -162,11 +183,15 @@ const sendMessage = (msg) => {
 
             client.sendMessage(msg);
 
+            console.log("Enviando MSG", msg);
+
             var ret = {
                 status: "OK",
                 message: "Mensgem enviada",
                 error: null,
             }
+
+
 
             return resolve(ret);
 
@@ -202,14 +227,10 @@ const contactInfo = (contact_id) => {
                 to: command_to,
             }
 
-
-            console.log("command", command);
-
+            console.log("Consultando Dados Contato", contact_id);
             var response = await client.sendCommand(command);
             if (response.resource) {
-                console.log(`Contato Blip`, response.resource);
                 var contato = await db.registra_contato(response);
-                console.log(`Contato DB`, contato);
                 return resolve(contato);
             } else {
                 return resolve(null);

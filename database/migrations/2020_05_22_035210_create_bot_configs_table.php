@@ -20,6 +20,8 @@ class CreateBotConfigsTable extends Migration
             $table->string("msg_invalid", 200);
             $table->string("msg_encaminhamento", 200);
             $table->string("msg_encerramento", 200);
+            $table->string("msg_encerramento_tentativas", 200);
+            $table->string("msg_encerramento_timeout", 200);
             $table->integer("timeout_encerra")->default(360);
             $table->timestamps();
         });
