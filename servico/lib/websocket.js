@@ -58,7 +58,6 @@ setInterval(function () {
             }
         });
     });
-    console.log(chat_rooms);
 
     for (var i = 0; i < chat_rooms.length; i++) {
         io_chat.to(chat_rooms[i]).emit('atualiza_chat', { dados: 'Atualizar Chat' });

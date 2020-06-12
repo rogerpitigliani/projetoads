@@ -28,9 +28,10 @@ const start_check_timeout = () => {
             for (var i = 0; i < ats.length; i++) {
                 let at = ats[i];
                 console.log("Finalizando Atendimento");
-                var msg = { type: "text/plain", content: bc.msg_encerramento_timeout, to: at.remote_id };
+                var msg = { type: "text/plain", content: bc.msg_encerramento_timeout, to: at.remote_id, atendimento_id: at.id };
                 await db.encerrar_atendimento_timeout(at);
                 await sendMessage(msg);
+
             }
 
         } catch (e) {
@@ -80,24 +81,35 @@ const init = () => {
 
         // Existe Atendimento em Aberto pra esse id?
         let a = await db.get_atendimento_by_remoteid(message);
-        console.log(`Atendimento para ${message.from}`, a);
+
+
+        // console.log(`Atendimento para ${message.from}`, a);
 
         var bc = await db.get_bot_configs();
 
         // O Contato existe?
-        let ci = await contactInfo(message.from);
-        console.log(`Contato para ${message.from}`, a);
+        if (a.status == 'new' && !a.contact_id) {
+            let ci = await contactInfo(message.from);
+            console.log(`Contato para ${message.from}`, a);
 
-        // Associa Contato ao Atendimento
-        if (ci) {
-            await db.associa_atendimento_contato(a, ci);
+            // Associa Contato ao Atendimento
+            if (ci) {
+                await db.associa_atendimento_contato(a, ci);
+            }
         }
+
+        if (a) {
+            message.atendimento_id = a.id;
+            message.contato_id = a.contato_id;
+            await db.add_message_in(message);
+        }
+
 
         console.log("Status do Atendimento:", a.status);
 
         if (a.status == 'new') {
 
-            await sendMessage({ type: "text/plain", content: bc.msg_inicial + '\n' + bc.msg_menu, to: message.from });
+            await sendMessage({ type: "text/plain", content: bc.msg_inicial + '\n' + bc.msg_menu, to: message.from, atendimento_id: a.id });
             await db.atendimento_menu(a);
 
         } else if (a.status == 'menu') {
@@ -109,8 +121,10 @@ const init = () => {
 
             if (rb) {
                 console.log("Resposta Encontrada", rb);
-
                 // PROCESSAR RESPOSTA VALIDA
+
+                await db.atendimento_para_equipe(a, rb);
+                await sendMessage({ type: "text/plain", content: bc.msg_encaminhamento, to: message.from, atendimento_id: a.id });
 
             } else {
 
@@ -120,12 +134,16 @@ const init = () => {
                 if (a.invalidas == 2) {
                     // Encerra, ja é a terceira - Informa (Excedeu 3 tentativas de opcao invalida)
                     await db.atendimento_encerra_invalidas(a);
-                    await sendMessage({ type: "text/plain", content: bc.msg_encerramento_tentativas, to: message.from });
+                    await sendMessage({ type: "text/plain", content: bc.msg_encerramento_tentativas, to: message.from, atendimento_id: a.id });
                 } else {
-                    await sendMessage({ type: "text/plain", content: bc.msg_invalid, to: message.from });
+                    await sendMessage({ type: "text/plain", content: bc.msg_invalid, to: message.from, atendimento_id: a.id });
                 }
             }
 
+
+        } else if (a.status == 'fila' || a.status == 'chat') {
+
+            console.log("Mensagem Recebida", " - Status", a.status)
 
         }
 
@@ -167,7 +185,7 @@ const init = () => {
 
 
 const sendMessage = (msg) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
 
             if (!client) {
@@ -191,6 +209,8 @@ const sendMessage = (msg) => {
                 error: null,
             }
 
+
+            await db.add_message_out(msg);
 
 
             return resolve(ret);

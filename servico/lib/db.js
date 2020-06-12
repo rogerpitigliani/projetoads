@@ -38,6 +38,24 @@ const associa_atendimento_contato = (a, c) => {
         return resolve(true);
     });
 }
+const atendimento_para_equipe = (a, rb) => {
+    return new Promise(async (resolve, reject) => {
+
+        console.log("Associando Equipe ao Atendimento...")
+        if (rb.equipe_id) {
+            let qry = `UPDATE atendimento
+            SET
+                status = 'fila',
+                equipe_id = ${rb.equipe_id},
+                datahora_fila = CURRENT_TIMESTAMP::timestamp(0),
+                datahora_ultima_recebida = CURRENT_TIMESTAMP::timestamp(0)
+            WHERE id = ${a.id};`;
+
+            await pool.query(qry);
+        }
+        return resolve(true);
+    });
+}
 
 
 const atendimento_fila = (a) => {
@@ -109,7 +127,7 @@ const get_atendimento_by_remoteid = (message) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            console.log(message);
+            // console.log(message);
 
             var canal = "chat";
             if (message.direcao == 'in') {
@@ -131,8 +149,8 @@ const get_atendimento_by_remoteid = (message) => {
                 // let proto = ("0" + data.getDate()).substr(-2) + ("0" + (data.getMonth() + 1)).substr(-2) + data.getFullYear() + Math.floor(1000 + Math.random() * 9000);
                 let proto = "" + data.getFullYear() + ("0" + (data.getMonth() + 1)) + "" + ("0" + data.getDate()) + Math.floor(1000 + Math.random() * 9000);
 
-                let qryadd = `INSERT INTO atendimento (canal, status, remote_id, protocolo, datahora_inicio, datahora_ultima_recebida)
-                    VALUES ('${canal}','new','${remoteid}','${proto}',CURRENT_TIMESTAMP::timestamp(0),CURRENT_TIMESTAMP::timestamp(0))
+                let qryadd = `INSERT INTO atendimento (message_id, canal, status, remote_id, protocolo, datahora_inicio, datahora_ultima_recebida)
+                    VALUES ('${message.id}','${canal}','new','${remoteid}','${proto}',CURRENT_TIMESTAMP::timestamp(0),CURRENT_TIMESTAMP::timestamp(0))
                     RETURNING *;`;
                 ret = await pool.query(qryadd);
             } else {
@@ -204,7 +222,7 @@ const encerrar_atendimento_timeout = (at) => {
         try {
 
 
-            let qry = `UPDATE atendimento SET status = 'timeout', finalizado = true WHERE id = ${at.id};`;
+            let qry = `UPDATE atendimento SET status = 'timeout', datahora_termino = CURRENT_TIMESTAMP::timestamp(0), finalizado = true WHERE id = ${at.id};`;
             var ret = await pool.query(qry);
             return resolve(true);
 
@@ -216,6 +234,80 @@ const encerrar_atendimento_timeout = (at) => {
 
 };
 
+const add_message_in = (m) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            console.log("Add Message", m);
+
+
+            let qry = `INSERT INTO mensagem (
+                    atendimento_id,
+                    direcao,
+                    type,
+                    content,
+                    created_at,
+                    updated_at)
+            VALUES
+            (       ${m.atendimento_id},
+                    '${m.direcao}',
+                    '${m.type}',
+                    '${m.content}',
+                    CURRENT_TIMESTAMP::timestamp(0),
+                    CURRENT_TIMESTAMP::timestamp(0)
+            )`;
+
+            var ret = await pool.query(qry);
+            console.log(ret);
+            return resolve(true);
+
+        } catch (e) {
+            console.log("Error get_atentimentos_expirados", e.message);
+            return reject(e);
+        }
+    });
+
+};
+
+const add_message_out = (m) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            console.log("Add Message", m);
+
+
+            let qry = `INSERT INTO mensagem (
+                    atendimento_id,
+                    direcao,
+                    type,
+                    content,
+                    created_at,
+                    updated_at)
+            VALUES
+            (       ${m.atendimento_id},
+                    'out',
+                    '${m.type}',
+                    '${m.content}',
+                    CURRENT_TIMESTAMP::timestamp(0),
+                    CURRENT_TIMESTAMP::timestamp(0)
+            )`;
+
+            var ret = await pool.query(qry);
+            console.log(ret);
+            return resolve(true);
+
+        } catch (e) {
+            console.log("Error get_atentimentos_expirados", e.message);
+            return reject(e);
+        }
+    });
+
+};
+
+
+
 
 exports.get_atendimento_by_remoteid = get_atendimento_by_remoteid;
 exports.atendimento_menu = atendimento_menu;
@@ -225,7 +317,10 @@ exports.atendimento_encerra_invalidas = atendimento_encerra_invalidas;
 exports.registra_contato = registra_contato;
 exports.limpar_atendimentos = limpar_atendimentos;
 exports.associa_atendimento_contato = associa_atendimento_contato;
+exports.atendimento_para_equipe = atendimento_para_equipe;
 exports.get_bot_configs = get_bot_configs;
 exports.get_atentimentos_expirados = get_atentimentos_expirados;
 exports.encerrar_atendimento_timeout = encerrar_atendimento_timeout;
 exports.get_resposta_bot = get_resposta_bot;
+exports.add_message_in = add_message_in;
+exports.add_message_out = add_message_out;
