@@ -4,7 +4,8 @@ export default {
     data() {
         return {
             sio: null,
-            chat_atual: null
+            chat_atual: null,
+            fila_status: [],
         }
     },
     created: function () {
@@ -13,9 +14,23 @@ export default {
     methods: {
         load_events: function () {
             var _this = this;
+
             _this.sio.on('atualiza_chat', (data) => {
-                console.log("Server Data", data);
+                console.log("atualiza_chat", data);
             });
+
+            _this.sio.on('atualiza_status_fila', (data) => {
+                console.log("atualiza_status_fila", data);
+                this.fila_status = data;
+            });
+
+            _this.sio.on('nova_mensagem_recebida', (msg) => {
+                if (this.mensagens) {
+                    this.mensagens.push(msg);
+                }
+
+            });
+
         },
         connect_io: function (socket_host, socket_port, socket_resource, usuario_id) {
 

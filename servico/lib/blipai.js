@@ -8,6 +8,7 @@ const Lime = require('lime-js');
 
 const config = require("config");
 const db = require("./db");
+const chat = require("./websocket");
 var client = null;
 var connected = false;
 
@@ -75,6 +76,9 @@ const init = () => {
 
 
     client.addMessageReceiver(true, async function (message) {
+
+        if (message.type == 'application/vnd.lime.chatstate+json') return true;
+
         console.log("Mensagem Recebida", message);
 
         message.direcao = 'in';
@@ -82,26 +86,34 @@ const init = () => {
         // Existe Atendimento em Aberto pra esse id?
         let a = await db.get_atendimento_by_remoteid(message);
 
-
         // console.log(`Atendimento para ${message.from}`, a);
-
         var bc = await db.get_bot_configs();
 
         // O Contato existe?
         if (a.status == 'new' && !a.contact_id) {
-            let ci = await contactInfo(message.from);
-            console.log(`Contato para ${message.from}`, a);
 
-            // Associa Contato ao Atendimento
-            if (ci) {
-                await db.associa_atendimento_contato(a, ci);
+            if (message.from.indexOf('0mn.io') < 0) {
+                let ci = await contactInfo(message.from);
+                console.log(`Contato para ${message.from}`, a);
+
+                // Associa Contato ao Atendimento
+                if (ci) {
+                    await db.associa_atendimento_contato(a, ci);
+                }
             }
+
         }
 
         if (a) {
             message.atendimento_id = a.id;
             message.contato_id = a.contato_id;
-            await db.add_message_in(message);
+            let add = await db.add_message_in(message);
+            if (add && a.status == 'chat') {
+                chat.nova_mensagem_recebida({
+                    msg: message,
+                    usuario_id: a.usuario_id
+                });
+            }
         }
 
 
@@ -197,10 +209,7 @@ const sendMessage = (msg) => {
                 return resolve(ret);
             }
 
-
-
             client.sendMessage(msg);
-
             console.log("Enviando MSG", msg);
 
             var ret = {
@@ -211,6 +220,8 @@ const sendMessage = (msg) => {
 
 
             await db.add_message_out(msg);
+
+
 
 
             return resolve(ret);

@@ -130,6 +130,15 @@ const get_atendimento_by_remoteid = (message) => {
             // console.log(message);
 
             var canal = "chat";
+
+            if (message.from.indexOf('messenger.gw') < 0) {
+                canal = "facebook";
+            } else if (message.from.indexOf('telegram.gw') < 0) {
+                canal = "telegram";
+            } else if (message.from.indexOf('whatsapp.gw') < 0) {
+                canal = "telegram";
+            }
+
             if (message.direcao == 'in') {
                 remoteid = message.from;
             } else {
@@ -182,6 +191,27 @@ const get_bot_configs = () => {
     });
 
 };
+const get_status_filas = () => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            let qry = `select
+                e.id as equipe_id,
+                count(a.id) as qtde
+            from equipe e
+            left join atendimento a on ( a.equipe_id = e.id and a.status = 'fila' )
+            group by e.id;`;
+
+            var ret = await pool.query(qry);
+            return resolve(ret.rows);
+
+        } catch (e) {
+            return reject(e);
+        }
+    });
+
+};
 
 const get_resposta_bot = (message) => {
 
@@ -196,6 +226,24 @@ const get_resposta_bot = (message) => {
             return resolve(ret.rows[0]);
         } catch (e) {
             console.log("Error on get_resposta_bot", e.message)
+            return reject(e);
+        }
+    });
+
+};
+const get_atendimento_atual_usuario = (usuario_id) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let qry = `select * from atendimento where usuario_id = '${usuario_id}' and status = 'chat' order by id desc limit 1`;
+            var ret = await pool.query(qry);
+            if (ret.rows.length == 0) {
+                return resolve(null);
+            }
+            var a = ret.rows[0];
+            return resolve(a);
+        } catch (e) {
+            console.log("Error on get_atendimento_atual_usuario", e.message)
             return reject(e);
         }
     });
@@ -227,7 +275,92 @@ const encerrar_atendimento_timeout = (at) => {
             return resolve(true);
 
         } catch (e) {
-            console.log("Error get_atentimentos_expirados", e.message);
+            console.log("Error encerrar_atendimento_timeout", e.message);
+            return reject(e);
+        }
+    });
+
+};
+const get_proximo_atendimento = (data) => {
+
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let qry = `select a.*
+from atendimento a
+join equipe e on a.equipe_id  = e.id
+join equipe_usuario eu on eu.equipe_id  = e.id and eu.usuario_id = ${data.usuario_id}
+where a.status = 'fila'
+order by a.datahora_fila desc
+limit 1
+`;
+
+            var ret = await pool.query(qry);
+            if (ret.rows.length == 0) return resolve(null);
+
+            var a = ret.rows[0];
+            ret = await pool.query(`UPDATE atendimento
+            SET
+                status = 'chat',
+                datahora_atende = CURRENT_TIMESTAMP::timestamp(0),
+                usuario_id = ${data.usuario_id}
+            WHERE id = ${a.id}
+            RETURNING * `);
+            var a = ret.rows[0];
+            return resolve(a);
+
+        } catch (e) {
+            console.log("Error get_proximo_atendimento", e.message);
+            return reject(e);
+        }
+    });
+
+};
+const get_mensagens_atendimento = (a) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let qry = `select * from mensagem where atendimento_id = ${a.id} order by created_at ASC`;
+            var ret = await pool.query(qry);
+            return resolve(ret.rows);
+        } catch (e) {
+            console.log("Error get_mensagens_atendimento", e.message);
+            return reject(e);
+        }
+    });
+
+};
+const get_qtde_atendimentos_usuario = (data) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let qry = `select count(1) as qtde
+            from atendimento
+            where usuario_id = ${data.usuario_id}
+            and finalizado = true
+            and datahora_inicio >= (current_date || ' 00:00:00')::timestamp(0);
+            `;
+            var ret = await pool.query(qry);
+            return resolve(ret.rows[0].qtde);
+        } catch (e) {
+            console.log("Error get_mensagens_atendimento", e.message);
+            return reject(e);
+        }
+    });
+
+};
+
+const get_contato_atendimento = (a) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let qry = `select * from contato where id = ${a.contato_id} order by created_at DESC LIMIT 1`;
+            var ret = await pool.query(qry);
+            if (ret.rows.length == 0) return resolve(null);
+            return resolve(ret.rows[0]);
+        } catch (e) {
+            console.log("Error get_mensagens_atendimento", e.message);
             return reject(e);
         }
     });
@@ -239,7 +372,7 @@ const add_message_in = (m) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            console.log("Add Message", m);
+            // console.log("Add Message", m);
 
 
             let qry = `INSERT INTO mensagem (
@@ -251,7 +384,7 @@ const add_message_in = (m) => {
                     updated_at)
             VALUES
             (       ${m.atendimento_id},
-                    '${m.direcao}',
+                    'in',
                     '${m.type}',
                     '${m.content}',
                     CURRENT_TIMESTAMP::timestamp(0),
@@ -259,7 +392,7 @@ const add_message_in = (m) => {
             )`;
 
             var ret = await pool.query(qry);
-            console.log(ret);
+            // console.log(ret);
             return resolve(true);
 
         } catch (e) {
@@ -275,7 +408,7 @@ const add_message_out = (m) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            console.log("Add Message", m);
+            // console.log("Add Message", m);
 
 
             let qry = `INSERT INTO mensagem (
@@ -295,7 +428,7 @@ const add_message_out = (m) => {
             )`;
 
             var ret = await pool.query(qry);
-            console.log(ret);
+            // console.log(ret);
             return resolve(true);
 
         } catch (e) {
@@ -324,3 +457,9 @@ exports.encerrar_atendimento_timeout = encerrar_atendimento_timeout;
 exports.get_resposta_bot = get_resposta_bot;
 exports.add_message_in = add_message_in;
 exports.add_message_out = add_message_out;
+exports.get_status_filas = get_status_filas;
+exports.get_proximo_atendimento = get_proximo_atendimento;
+exports.get_mensagens_atendimento = get_mensagens_atendimento;
+exports.get_contato_atendimento = get_contato_atendimento;
+exports.get_qtde_atendimentos_usuario = get_qtde_atendimentos_usuario;
+exports.get_atendimento_atual_usuario = get_atendimento_atual_usuario;

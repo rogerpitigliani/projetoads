@@ -9,7 +9,7 @@
                 <div
                   class="text-xs font-weight-bold text-primary text-uppercase mb-1"
                 >Atendidos (Hoje)</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{qtde_atendimentos_hoje}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -24,7 +24,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Na Fila</div>
-                <div class="h5 mb-0 font-weight-bold text-danger">{{clientes_nafila}}</div>
+                <div class="h5 mb-0 font-weight-bold text-danger">{{fila_qtd}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-bell fa-2x text-gray-300"></i>
@@ -36,12 +36,19 @@
 
       <b-col cols="6">
         <div class="h-100 text-right">
-          <b-button class="h-100" variant="warning" size="lg" @click="recebeAtendimento">
+          <b-button
+            v-if="!em_atendimento"
+            class="h-100"
+            variant="warning"
+            size="lg"
+            @click="recebeAtendimento"
+            :disabled="btn_receber_cliente_disabled"
+          >
             <i class="fas fa-user-plus"></i> Receber Cliente
           </b-button>
 
           <b-button
-            :disabled="!ematendimento"
+            v-if="em_atendimento"
             class="h-100"
             variant="success"
             size="lg"
@@ -51,6 +58,9 @@
           </b-button>
         </div>
       </b-col>
+    </b-row>
+    <b-row>
+      <b-col>{{ contato }}</b-col>
     </b-row>
 
     <b-row class="h-100">
@@ -63,25 +73,25 @@
           <div id="messages_content" ref="msgcontent">
             <ul class="chat-list">
               <template v-for="msg in mensagens">
-                <li class="in" v-if="msg.type == 'in'">
+                <li class="in" v-if="msg.direcao == 'in'" v-bind:key="msg.id">
                   <div class="chat-img">
-                    <img alt="Avtar" :src="msg.image" />
+                    <img alt="Avtar" :src="contato.photo_uri" />
                   </div>
                   <div class="chat-body">
                     <div class="chat-message">
                       <!-- <h5>{{ msg.name }}</h5> -->
-                      <p>{{ msg.message }}</p>
+                      <p>{{ msg.content }}</p>
                     </div>
                   </div>
                 </li>
-                <li class="out" v-if="msg.type == 'out'">
+                <li class="out" v-if="msg.direcao == 'out'" v-bind:key="msg.id">
                   <div class="chat-img">
-                    <img alt="Avtar" :src="msg.image" />
+                    <img alt="Avtar" src="/img/bot_imagem.png" />
                   </div>
                   <div class="chat-body">
                     <div class="chat-message">
                       <!-- <h5>{{ msg.name }}</h5> -->
-                      <p>{{ msg.message }}</p>
+                      <p>{{ msg.content }}</p>
                     </div>
                   </div>
                 </li>
@@ -147,82 +157,13 @@ export default {
       shouldScroll: false,
       clientes_nafila: 12,
       nomecliente: null,
-      ematendimento: false,
+      em_atendimento: false,
       titulo_atendimento: "Disponível",
       mensagens: [],
-      mensagens2: [
-        {
-          id: 1,
-          name: "Pedro",
-          message: "Olá, tudo bem... Gostaria de ....lalalalal",
-          image: "https://bootdey.com/img/Content/avatar/avatar1.png",
-          type: "in",
-          channel: "whatsapp"
-        },
-        {
-          id: 2,
-          name: "Roger",
-          message:
-            "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using",
-          image: "https://bootdey.com/img/Content/avatar/avatar6.png",
-          type: "out",
-          channel: "whatsapp"
-        },
-        {
-          id: 3,
-          name: "Pedro",
-          message:
-            "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. ",
-          image: "https://bootdey.com/img/Content/avatar/avatar1.png",
-          type: "in",
-          channel: "whatsapp"
-        },
-        {
-          id: 4,
-          name: "Roger",
-          message:
-            "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making ",
-          image: "https://bootdey.com/img/Content/avatar/avatar6.png",
-          type: "out",
-          channel: "whatsapp"
-        },
-        {
-          id: 3,
-          name: "Pedro",
-          message:
-            "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. ",
-          image: "https://bootdey.com/img/Content/avatar/avatar1.png",
-          type: "in",
-          channel: "whatsapp"
-        },
-        {
-          id: 4,
-          name: "Roger",
-          message:
-            "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making ",
-          image: "https://bootdey.com/img/Content/avatar/avatar6.png",
-          type: "out",
-          channel: "whatsapp"
-        },
-        {
-          id: 3,
-          name: "Pedro",
-          message:
-            "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. ",
-          image: "https://bootdey.com/img/Content/avatar/avatar1.png",
-          type: "in",
-          channel: "whatsapp"
-        },
-        {
-          id: 4,
-          name: "Roger",
-          message:
-            "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making ",
-          image: "https://bootdey.com/img/Content/avatar/avatar6.png",
-          type: "out",
-          channel: "whatsapp"
-        }
-      ]
+      atendimento: null,
+      contato: null,
+      qtde_atendimentos_hoje: 0,
+      btn_receber: false
     };
   },
   methods: {
@@ -230,14 +171,52 @@ export default {
       alert("*** NAO IMPLEMENTADO ***");
     },
 
+    refresh_dados: function() {
+      var _this = this;
+      _this.sio.emit(
+        "atendimento_usuario",
+        { usuario_id: _this.usuario_id },
+        async data => {
+          await _this.$nextTick();
+          _this.atendimento = data.atendimento;
+          _this.mensagens = data.mensagens;
+          _this.contato = data.contato;
+        }
+      );
+      _this.sio.emit("atualizar_status_fila", {});
+      _this.sio.emit(
+        "get_qtde_atendimentos_hoje",
+        { usuario_id: _this.usuario_id },
+        data => {
+          _this.qtde_atendimentos_hoje = data.qtde;
+        }
+      );
+    },
+
     recebeAtendimento: async function() {
       var _this = this;
-      _this.mensagens = _this.mensagens2;
-      _this.clientes_nafila--;
-      _this.nomecliente = "Pedro";
-      _this.ematendimento = true;
-      _this.titulo_atendimento =
-        _this.titulo + " Pedro (51) 98246-4536 - ** SUPORTE **";
+      var params = { usuario_id: _this.usuario_id };
+
+      _this.sio.emit("get_proximo_atendimento", params, async data => {
+        console.log("get_proximo_atendimento", data);
+        await _this.$nextTick();
+
+        if (data.atendimento) {
+          _this.refresh_dados();
+        }
+
+        _this.atendimento = data.atendimento;
+        _this.mensagens = data.mensagens;
+        _this.contato = data.contato;
+      });
+
+      //   _this.mensagens = _this.mensagens2;
+      //   _this.clientes_nafila--;
+      //   _this.nomecliente = "Pedro";
+      _this.em_atendimento = true;
+      //   _this.titulo_atendimento =
+      //   _this.titulo + " Pedro (51) 98246-4536 - ** SUPORTE **";
+
       await _this.$nextTick();
       _this.scrollToBottom();
 
@@ -248,29 +227,34 @@ export default {
       }, 1200);
     },
     sendMessage: async function() {
-      if (this.message) {
-        this.mensagens.push({
-          name: "Roger",
-          message: this.message,
-          image: "https://bootdey.com/img/Content/avatar/avatar6.png",
-          type: "out",
-          channel: "whatsapp"
-        });
-        this.message = "";
+      var _this = this;
+      if (_this.message) {
+        var msg = {
+          type: "text/plain",
+          content: _this.message,
+          to: _this.atendimento.remote_id,
+          atendimento_id: _this.atendimento.id,
+          direcao: "out"
+        };
 
-        this.shouldScroll =
-          this.$refs.msgcontent.scrollTop +
-            this.$refs.msgcontent.clientHeight ===
-          this.$refs.msgcontent.scrollHeight;
-        if (!this.shouldScroll) {
-          await this.$nextTick();
-          this.scrollToBottom();
+        _this.sio.emit("send_message", msg, data => {
+          if (data.status == "OK") {
+            _this.mensagens.push(data.msg);
+            _this.message = "";
+          }
+        });
+
+        _this.shouldScroll =
+          _this.$refs.msgcontent.scrollTop +
+            _this.$refs.msgcontent.clientHeight ===
+          _this.$refs.msgcontent.scrollHeight;
+        if (!_this.shouldScroll) {
+          await _this.$nextTick();
+          _this.scrollToBottom();
           setTimeout(function() {
-            this.scrollToBottom();
+            _this.scrollToBottom();
           }, 1000);
         }
-
-        //alert(this.$refs.msgcontent.scrollHeight);
       }
     },
     scrollToBottom: function() {
@@ -282,21 +266,41 @@ export default {
     }
   },
 
+  computed: {
+    fila_qtd: function() {
+      var _this = this;
+      var x = 0;
+      Object.keys(_this.fila_status).forEach(key => {
+        x += parseInt(_this.fila_status[key].qtde);
+      });
+      _this.btn_receber = x > 0 ? true : false;
+      return x;
+    },
+    btn_receber_cliente_disabled: function() {
+      if (this.em_atendimento) return true;
+      return !this.btn_receber;
+    }
+  },
+
   mounted() {
-    console.log("Component mounted.");
     var _this = this;
     setTimeout(async function() {
       await _this.$nextTick();
       _this.scrollToBottom();
-      console.log("Rolando");
+      //   console.log("Rolando");
     }, 1200);
 
-    _this.connect_io(
-      _this.socket_host,
-      _this.socket_port,
-      "chat",
-      _this.usuario_id
-    );
+    (async function() {
+      _this.connect_io(
+        _this.socket_host,
+        _this.socket_port,
+        "chat",
+        _this.usuario_id
+      );
+
+      await _this.$nextTick();
+      _this.refresh_dados();
+    })();
   }
 };
 </script>
@@ -341,6 +345,9 @@ export default {
   position: relative;
 }
 
+.chat-list .chat-message p {
+}
+
 .chat-list .chat-message:before {
   content: "";
   position: absolute;
@@ -360,6 +367,10 @@ export default {
   line-height: 18px;
   margin: 0;
   padding: 0;
+  white-space: pre-line;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .chat-list .chat-body {

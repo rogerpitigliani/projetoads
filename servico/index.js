@@ -3,12 +3,14 @@ const blipai = require("./lib/blipai");
 const websocket = require("./lib/websocket");
 const db = require("./lib/db");
 
-
-
 (async function () {
     // await db.limpar_atendimentos();
 })();
 
 console.log(`Rodando!`);
 blipai.init();
+
+setInterval(function () {
+    // websocket.atualiza_fila_status();
+}, 2000);
 
