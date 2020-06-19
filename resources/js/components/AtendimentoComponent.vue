@@ -3,7 +3,11 @@
     <b-row class="rowinfo">
       <b-col cols="6" sm="6" md="3">
         <b-card no-body border-variant="primary" class="text-center" text-variant="primary">
-          <b-card-header header-bg-variant="primary" header-text-variant="white">
+          <b-card-header
+            header-bg-variant="primary"
+            header-text-variant="white"
+            class="header-card-info"
+          >
             <i class="fas fa-user-plus"></i> Atendidas
           </b-card-header>
           <b-card-body>
@@ -14,7 +18,11 @@
 
       <b-col cols="6" sm="6" md="3">
         <b-card no-body border-variant="danger" class="text-center" text-variant="danger">
-          <b-card-header header-bg-variant="danger" header-text-variant="white">
+          <b-card-header
+            header-bg-variant="danger"
+            header-text-variant="white"
+            class="header-card-info"
+          >
             <i class="fas fa-user-plus"></i> Na Fila
           </b-card-header>
           <b-card-body>
@@ -23,7 +31,7 @@
         </b-card>
       </b-col>
 
-      <b-col sm="10" offset-sm="1" md="4" offset-md="2">
+      <b-col cols="12" sm="10" offset-sm="1" md="4" offset-md="2">
         <div style="padding-top: 10px;">
           <b-button
             v-if="!em_atendimento"
@@ -441,5 +449,11 @@ export default {
 .rowinfo {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
+}
+
+.header-card-info {
+  /* font-size: 0.7em; */
+  /* font-size: 2vh; */
+  padding: 0.75rem 0 !important;
 }
 </style>
