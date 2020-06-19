@@ -25,6 +25,7 @@ import Notifications from 'vue-notification';
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('usuario-component', require('./components/UsuarioComponent.vue').default);
+Vue.component('classificacao-component', require('./components/ClassificacaoComponent.vue').default);
 Vue.component('equipe-component', require('./components/EquipeComponent.vue').default);
 Vue.component('atendimento-component', require('./components/AtendimentoComponent.vue').default);
 

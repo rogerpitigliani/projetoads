@@ -1,55 +1,43 @@
 <template>
   <b-container>
     <b-row class="rowinfo">
-      <b-col>
-        <div class="card border-left-primary shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div
-                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
-                >Atendidos (Hoje)</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{qtde_atendimentos_hoje}}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </b-col>
-      <b-col>
-        <div class="card border-left-danger shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Na Fila</div>
-                <div class="h5 mb-0 font-weight-bold text-danger">{{fila_qtd}}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-bell fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+      <b-col cols="6" sm="6" md="3">
+        <b-card no-body border-variant="primary" class="text-center" text-variant="primary">
+          <b-card-header header-bg-variant="primary" header-text-variant="white">
+            <i class="fas fa-user-plus"></i> Atendidas
+          </b-card-header>
+          <b-card-body>
+            <span style="font-size: 22px; font-weight: bold;">{{ qtde_atendimentos_hoje }}</span>
+          </b-card-body>
+        </b-card>
       </b-col>
 
-      <b-col cols="6">
-        <div class="h-100 text-right">
+      <b-col cols="6" sm="6" md="3">
+        <b-card no-body border-variant="danger" class="text-center" text-variant="danger">
+          <b-card-header header-bg-variant="danger" header-text-variant="white">
+            <i class="fas fa-user-plus"></i> Na Fila
+          </b-card-header>
+          <b-card-body>
+            <span style="font-size: 22px;font-weight: bold;">{{ clientes_nafila }}</span>
+          </b-card-body>
+        </b-card>
+      </b-col>
+
+      <b-col sm="10" offset-sm="1" md="4" offset-md="2">
+        <div style="padding-top: 10px;">
           <b-button
             v-if="!em_atendimento"
-            class="h-100"
             variant="warning"
             size="lg"
+            class="btn-block"
             @click="recebeAtendimento"
             :disabled="btn_receber_cliente_disabled"
           >
             <i class="fas fa-user-plus"></i> Receber Cliente
           </b-button>
-
           <b-button
             v-if="em_atendimento"
-            class="h-100"
+            class="btn-block"
             variant="success"
             size="lg"
             @click="encerrarAtendimento"
@@ -58,9 +46,6 @@
           </b-button>
         </div>
       </b-col>
-    </b-row>
-    <b-row>
-      <b-col>{{ contato }}</b-col>
     </b-row>
 
     <b-row class="h-100">
@@ -410,9 +395,9 @@ export default {
   -moz-border-radius: 0.3rem 0.3rem 0 0;
   border-radius: 0.3rem 0.3rem 0 0;
 }
-body {
+/* body {
   height: 100%;
-}
+} */
 .border-left-primary {
   border-left: 0.25rem solid #4e73df !important;
 }

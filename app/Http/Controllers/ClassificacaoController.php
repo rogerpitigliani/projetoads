@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Classificacao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 
 class ClassificacaoController extends Controller
 {
@@ -12,11 +16,23 @@ class ClassificacaoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        if ($request->get('datatype') == 'json') {
+            return response()->json(Classificacao::all());
+        } elseif ($request->get('datatype') == 'list') {
 
+            $regs = Classificacao::select('id as value', 'classificacao as text')
+                ->where('enabled', '=', false)
+                ->orderBy('classificacao', 'asc')
+                ->get();
+
+            return response()->json($regs);
+        } else {
+            $titulo = "Classificação";
+            return view("configs/classificacao", compact('titulo'));
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -35,7 +51,47 @@ class ClassificacaoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'classificacao' => [
+                'required',
+                'string',
+                'min:4',
+                'max:50',
+                Rule::unique('classificacao')
+            ],
+            'tipo' => [
+                'required',
+                'string',
+                'min:4',
+                'max:100',
+                Rule::in(['Neutra', 'Positiva', 'Negativa']),
+            ],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->getMessages(), 422);
+        }
+
+        $cl = new Classificacao();
+        $cl->classificacao = $request->get('classificacao');
+        $cl->descricao = $request->get('descricao');
+        $cl->tipo = $request->get('tipo');
+        $cl->enabled = $request->get('enabled');
+        $cl->default_timeout = $request->get('default_timeout');
+        $cl->save();
+
+        if ($cl->default_timeout) {
+            Classificacao::where('id', '<>', $cl->id)
+                ->update([
+                    'default_timeout' => false
+                ]);
+        }
+
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'Registro Criado'
+        ]);
     }
 
     /**
@@ -46,7 +102,7 @@ class ClassificacaoController extends Controller
      */
     public function show(Classificacao $classificacao)
     {
-        //
+        return response()->json($classificacao);
     }
 
     /**
@@ -69,7 +125,46 @@ class ClassificacaoController extends Controller
      */
     public function update(Request $request, Classificacao $classificacao)
     {
-        //
+        $rules = [
+            'classificacao' => [
+                'required',
+                'string',
+                'min:4',
+                'max:50',
+                Rule::unique('classificacao')->ignore($classificacao->id)
+            ],
+            'tipo' => [
+                'required',
+                'string',
+                'min:4',
+                'max:100',
+                Rule::in(['Neutra', 'Positiva', 'Negativa']),
+            ],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->getMessages(), 422);
+        }
+
+        $classificacao->classificacao = $request->get('classificacao');
+        $classificacao->descricao = $request->get('descricao');
+        $classificacao->tipo = $request->get('tipo');
+        $classificacao->enabled = ($request->get('enabled') == true);
+        $classificacao->default_timeout = ($request->get('default_timeout') == true);
+        $classificacao->save();
+
+        if ($classificacao->default_timeout) {
+            Classificacao::where('id', '<>', $classificacao->id)
+                ->update([
+                    'default_timeout' => false
+                ]);
+        }
+
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'Registro Atualizado'
+        ]);
     }
 
     /**

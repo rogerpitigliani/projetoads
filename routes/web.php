@@ -30,6 +30,7 @@ Route::group(['prefix' => 'usuario', 'middleware' => ['auth']], function () {
 Route::group(['prefix' => 'configs', 'middleware' => ['auth']], function () {
     Route::resource('apiconfig', 'ApiConfigController');
     Route::resource('botconfig', 'BotConfigController');
+    Route::resource('classificacao', 'ClassificacaoController');
 });
 
 Route::group(['prefix' => 'atendimento', 'middleware' => ['auth']], function () {

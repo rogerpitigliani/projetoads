@@ -82,6 +82,8 @@ io_chat.on('connection', function (socket) {
     socket.on("atendimento_usuario", async (data, fn) => {
 
         var a = await db.get_atendimento_atual_usuario(data.usuario_id);
+        var contato = null;
+        var mensagens = null;
 
         if (a) {
             mensagens = await db.get_mensagens_atendimento(a);

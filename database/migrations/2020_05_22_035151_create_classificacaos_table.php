@@ -17,7 +17,10 @@ class CreateClassificacaosTable extends Migration
             $table->bigIncrements("id");
             $table->string("classificacao", 100);
             $table->string("descricao", 200)->nullable();
-
+            $table->string("tipo", 100)->default("Neutra"); // Positiva, Negativa ou Neutra
+            $table->boolean("enabled")->default(true);
+            $table->boolean("default_timeout")->default(false);
+            $table->index("tipo", "idx_classif_tipo");
             $table->timestamps();
         });
     }
