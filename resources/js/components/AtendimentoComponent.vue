@@ -1,5 +1,33 @@
 <template>
   <b-container>
+    <b-modal id="bv-modal-encerra" @ok="confirmaEncerramento">
+      <template v-slot:modal-title>
+        <i class="fas fa-check-circle"></i> Encerrar Atendimento
+      </template>
+
+      <b-container fluid>
+        <form ref="form" @submit.stop.prevent="confirmaEncerramento">
+          <b-row>
+            <b-col>
+              <b-form-group
+                id="group-classificacao"
+                label="Selecione uma Classificação para o atendimento realizado:"
+                label-for="classificacao_id"
+              >
+                <b-form-select v-model="classificacao_id" :options="lista_classificacoes"></b-form-select>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group id="group-classificacao" label="Observações:" label-for="observacoes">
+                <b-form-textarea id="observacoes" size="lg" placeholder="..." v-model="observacoes"></b-form-textarea>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </form>
+      </b-container>
+    </b-modal>
     <b-row class="rowinfo">
       <b-col cols="6" sm="6" md="3">
         <b-card no-body border-variant="primary" class="text-center" text-variant="primary">
@@ -8,7 +36,7 @@
             header-text-variant="white"
             class="header-card-info"
           >
-            <i class="fas fa-user-plus"></i> Atendidas
+            <i class="fas fa-user-check"></i> Atendidas
           </b-card-header>
           <b-card-body>
             <span style="font-size: 22px; font-weight: bold;">{{ qtde_atendimentos_hoje }}</span>
@@ -23,10 +51,10 @@
             header-text-variant="white"
             class="header-card-info"
           >
-            <i class="fas fa-user-plus"></i> Na Fila
+            <i class="fas fa-user-clock"></i> Na Fila
           </b-card-header>
           <b-card-body>
-            <span style="font-size: 22px;font-weight: bold;">{{ clientes_nafila }}</span>
+            <span style="font-size: 22px;font-weight: bold;">{{ qtde_fila }}</span>
           </b-card-body>
         </b-card>
       </b-col>
@@ -143,7 +171,7 @@
 import socketio from "../socketio";
 export default {
   mixins: [socketio],
-  props: ["titulo", "socket_host", "socket_port", "usuario_id"],
+  props: ["titulo", "socket_host", "socket_port", "usuario_id", "usuario"],
   data() {
     return {
       message: "",
@@ -156,16 +184,52 @@ export default {
       atendimento: null,
       contato: null,
       qtde_atendimentos_hoje: 0,
-      btn_receber: false
+      qtde_fila: 0,
+      btn_receber: false,
+      usuario_logado: null,
+      usuario_equipes: [],
+      lista_classificacoes: [],
+      observacoes: null,
+      classificacao_id: null
     };
   },
   methods: {
-    encerrarAtendimento: function() {
-      alert("*** NAO IMPLEMENTADO ***");
+    confirmaEncerramento: function(e) {
+      var _this = this;
+      if (!_this.classificacao_id) {
+        _this.$msgError("Selecione uma classificação para encerrar!");
+        e.preventDefault();
+        return false;
+      } else {
+        _this.atendimento.classificacao_id = _this.classificacao_id;
+        _this.atendimento.observacoes = _this.observacoes;
+        _this.sio.emit("encerrar_atendimento", _this.atendimento, data => {
+          if (data.status == "OK") {
+            _this.$msgSuccess(data.message);
+            _this.refresh_dados();
+          } else {
+            _this.$msgError(data.message);
+            e.preventDefault();
+          }
+        });
+      }
+    },
+    encerrarAtendimento: async function() {
+      var _this = this;
+
+      _this.sio.emit(
+        "get_lista_classificacoes",
+        { usuario_id: _this.usuario_id },
+        data => {
+          _this.lista_classificacoes = data.list;
+          _this.$bvModal.show("bv-modal-encerra");
+        }
+      );
     },
 
     refresh_dados: function() {
       var _this = this;
+      _this.em_atendimento = false;
       _this.sio.emit(
         "atendimento_usuario",
         { usuario_id: _this.usuario_id },
@@ -174,9 +238,17 @@ export default {
           _this.atendimento = data.atendimento;
           _this.mensagens = data.mensagens;
           _this.contato = data.contato;
+          if (_this.atendimento) _this.em_atendimento = true;
         }
       );
-      _this.sio.emit("atualizar_status_fila", {});
+
+      _this.sio.emit(
+        "get_qtde_fila_usuario",
+        { usuario_id: _this.usuario_id },
+        data => {
+          _this.qtde_fila = data.qtde;
+        }
+      );
       _this.sio.emit(
         "get_qtde_atendimentos_hoje",
         { usuario_id: _this.usuario_id },
@@ -263,20 +335,29 @@ export default {
     fila_qtd: function() {
       var _this = this;
       var x = 0;
-      Object.keys(_this.fila_status).forEach(key => {
-        x += parseInt(_this.fila_status[key].qtde);
-      });
+
+      //   Object.keys(_this.fila_status).forEach(key => {
+      //     for (var i = 0; i < _this.usuario_equipes; i++) {
+      //       if (_this.usuario_equipes[i].id == _this.fila_status[key].equipe_id) {
+      //         x += parseInt(_this.fila_status[key].qtde);
+      //       }
+      //     }
+      //   });
+
       _this.btn_receber = x > 0 ? true : false;
       return x;
     },
     btn_receber_cliente_disabled: function() {
       if (this.em_atendimento) return true;
-      return !this.btn_receber;
+      return this.qtde_fila == 0;
     }
   },
 
   mounted() {
     var _this = this;
+    _this.usuario_logado = JSON.parse(_this.usuario);
+    _this.usuario_equipes = _this.usuario_logado.equipes;
+
     setTimeout(async function() {
       await _this.$nextTick();
       _this.scrollToBottom();

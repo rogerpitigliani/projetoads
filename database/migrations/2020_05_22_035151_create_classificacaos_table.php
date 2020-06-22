@@ -20,6 +20,7 @@ class CreateClassificacaosTable extends Migration
             $table->string("tipo", 100)->default("Neutra"); // Positiva, Negativa ou Neutra
             $table->boolean("enabled")->default(true);
             $table->boolean("default_timeout")->default(false);
+            $table->boolean("default_invalidas")->default(false);
             $table->index("tipo", "idx_classif_tipo");
             $table->timestamps();
         });

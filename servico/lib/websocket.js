@@ -79,6 +79,32 @@ io_chat.on('connection', function (socket) {
         fn({ qtde: qtde });
 
     });
+    socket.on("encerrar_atendimento", async (a, fn) => {
+
+        console.log("WEB SOLICITOU ENCERRAR ATENDIMENTO", a);
+        var res = await db.encerrar_atendimento(a);
+        if (res) {
+            fn({ status: 'OK', message: 'Atendimento encerrado' });
+        } else {
+            fn({ status: 'ERR', message: 'Ops! Algo deu errado. Atendimento nao foi finalizado.' });
+        }
+
+    });
+
+    socket.on("get_qtde_fila_usuario", async (data, fn) => {
+
+        console.log("WEB SOLICITOU QTDE FILA", data);
+        var qtde = await db.get_qtde_fila_usuario(data);
+        fn({ qtde: qtde });
+
+    });
+    socket.on("get_lista_classificacoes", async (data, fn) => {
+
+        console.log("WEB SOLICITOU LISTA DE CLASSIFICACOES", data);
+        var res = await db.get_lista_classificacoes(data);
+        fn({ list: res });
+
+    });
     socket.on("atendimento_usuario", async (data, fn) => {
 
         var a = await db.get_atendimento_atual_usuario(data.usuario_id);
@@ -155,14 +181,14 @@ const get_rooms = () => {
 
 const atualiza_fila_status = () => {
     return new Promise(async (resolve, reject) => {
-        let filas = await db.get_status_filas();
+        // let filas = await db.get_status_filas();
         var rooms = await get_rooms();
-        console.log("status filas", filas, rooms);
+        // console.log("status filas", filas, rooms);
         for (var i = 0; i < rooms.length; i++) {
-            console.log("Emitindo atualiza_status_fila", rooms[i]);
-            io_chat.to(rooms[i]).emit('atualiza_status_fila', filas);
+            //  console.log("Emitindo atualiza_status_fila", rooms[i]);
+            io_chat.to(rooms[i]).emit('atualiza_status_fila', {});
         }
-        return resolve(filas);
+        return resolve(true);
     });
 }
 

@@ -81,6 +81,17 @@
                   ></b-form-checkbox>
                 </div>
               </template>
+              <template v-slot:cell(default_invalidas)="row">
+                <div>
+                  <b-form-checkbox
+                    v-model="row.item.default_invalidas"
+                    name="check-button"
+                    switch
+                    disabled
+                    size="lg"
+                  ></b-form-checkbox>
+                </div>
+              </template>
 
               <template v-slot:cell(actions)="row">
                 <b-button
@@ -169,6 +180,24 @@
                     </b-col>
                     <b-col>
                       <b-form-group
+                        id="group-default_invalidas"
+                        label="Padrão Invalidas"
+                        label-for="default_invalidas"
+                        title="Classificação aplicada quando o atendimento encerrado tentativas invalidas"
+                      >
+                        <b-form-checkbox
+                          id="default_invalidas"
+                          v-model="form.default_invalidas"
+                          name="default_invalidas"
+                          switch
+                          size="lg"
+                          :value="true"
+                          :unchecked-value="false"
+                        >{{ (form.default_invalidas)?'Sim':'Não' }}</b-form-checkbox>
+                      </b-form-group>
+                    </b-col>
+                    <b-col>
+                      <b-form-group
                         id="group-enabled"
                         label="Habilitado"
                         label-for="enabled"
@@ -235,9 +264,10 @@ export default {
         { key: "id", label: "ID", sortable: true, class: "column-id" },
         { key: "classificacao", label: "Classificacao", sortable: true },
         { key: "descricao", label: "Descricao", sortable: true },
-        { key: "tipo", label: "Tipo Classificação", sortable: true },
+        { key: "tipo", label: "Tipo", sortable: true },
         { key: "enabled", label: "Habilitado", sortable: true },
-        { key: "default_timeout", label: "Padrão Timeout", sortable: true },
+        { key: "default_timeout", label: "Timeout", sortable: true },
+        { key: "default_invalidas", label: "Invalidas", sortable: true },
         { key: "actions", label: "", sortable: false, class: "column-action" }
       ],
       dataArray: [],

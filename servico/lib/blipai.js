@@ -25,7 +25,7 @@ const start_check_timeout = () => {
                 console.log("BotConfig nao carregada");
                 return;
             }
-            let ats = await db.get_atentimentos_expirados(bc.timeout_encerra);
+            let ats = await db.get_atendimentos_expirados(bc.timeout_encerra);
             for (var i = 0; i < ats.length; i++) {
                 let at = ats[i];
                 console.log("Finalizando Atendimento");
@@ -137,6 +137,7 @@ const init = () => {
 
                 await db.atendimento_para_equipe(a, rb);
                 await sendMessage({ type: "text/plain", content: bc.msg_encaminhamento, to: message.from, atendimento_id: a.id });
+                await chat.atualiza_fila_status();
 
             } else {
 

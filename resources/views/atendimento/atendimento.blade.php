@@ -7,6 +7,7 @@
         socket_port="{{ env('SOCKET_PORT') }}"
         usuario_id="{{ Auth::user()->id }}"
         titulo="{{$titulo}}"
+        usuario="{{ json_encode($usuario) }}"
     ></atendimento-component>
 
 @endsection

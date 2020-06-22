@@ -76,7 +76,18 @@ const atendimento_opcaoinvalida = (a) => {
 }
 const atendimento_encerra_invalidas = (a) => {
     return new Promise(async (resolve, reject) => {
-        let qry = `UPDATE atendimento SET status = 'closed_invalid', finalizado = true, datahora_termino = CURRENT_TIMESTAMP::timestamp(0) WHERE id = ${a.id};`;
+
+        let classificacao_id = 'null';
+        let res = await pool.query("select id from classificacao c  where default_invalidas = true limit 1;");
+        if (res.rows.length > 0) classificacao_id = res.rows[0].id;
+
+        let qry = `UPDATE atendimento
+        SET
+            status = 'closed_invalid',
+            finalizado = true,
+            datahora_termino = CURRENT_TIMESTAMP::timestamp(0),
+            classificacao_id = ${classificacao_id}
+            WHERE id = ${a.id};`;
         await pool.query(qry);
         return resolve(true);
     });
@@ -249,7 +260,7 @@ const get_atendimento_atual_usuario = (usuario_id) => {
     });
 
 };
-const get_atentimentos_expirados = (tempo) => {
+const get_atendimentos_expirados = (tempo) => {
 
     return new Promise(async (resolve, reject) => {
         try {
@@ -258,7 +269,25 @@ const get_atentimentos_expirados = (tempo) => {
             var ret = await pool.query(qry);
             return resolve(ret.rows);
         } catch (e) {
-            console.log("Error get_atentimentos_expirados", e.message);
+            console.log("Error get_atendimentos_expirados", e.message);
+            return reject(e);
+        }
+    });
+
+};
+const get_lista_classificacoes = (tempo) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            let qry = `select id as value, classificacao  as text
+                from classificacao c
+                where ( c.enabled = true ) and ( c.default_timeout = false ) and ( c.default_invalidas = false )
+                order by classificacao asc;`;
+            var ret = await pool.query(qry);
+            return resolve(ret.rows);
+        } catch (e) {
+            console.log("Error get_lista_classificacoes", e.message);
             return reject(e);
         }
     });
@@ -269,8 +298,16 @@ const encerrar_atendimento_timeout = (at) => {
     return new Promise(async (resolve, reject) => {
         try {
 
+            let res = await pool.query("select id from classificacao c  where default_timeout = true limit 1;");
+            let classificacao_id = 'null';
+            if (res.rows.length > 0) classificacao_id = res.rows[0].id;
+            let qry = `UPDATE atendimento
+                SET status = 'timeout',
+                    datahora_termino = CURRENT_TIMESTAMP::timestamp(0),
+                    finalizado = true,
+                    classificacao_id = ${classificacao_id}
+                WHERE id = ${at.id};`;
 
-            let qry = `UPDATE atendimento SET status = 'timeout', datahora_termino = CURRENT_TIMESTAMP::timestamp(0), finalizado = true WHERE id = ${at.id};`;
             var ret = await pool.query(qry);
             return resolve(true);
 
@@ -281,6 +318,35 @@ const encerrar_atendimento_timeout = (at) => {
     });
 
 };
+
+const encerrar_atendimento = (at) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+
+            let qry = `UPDATE atendimento
+                SET status = 'end',
+                    datahora_termino = CURRENT_TIMESTAMP::timestamp(0),
+                    finalizado = true,
+                    classificacao_id = ${at.classificacao_id},
+                    observacoes = '${at.observacoes}'
+                WHERE id = ${at.id};`;
+            var ret = await pool.query(qry);
+            if (ret.rowCount == 1) {
+                return resolve(true);
+            } else {
+                return resolve(false);
+            }
+
+        } catch (e) {
+            console.log("Error encerrar_atendimento", e.message);
+            return reject(e);
+        }
+    });
+
+};
+
 const get_proximo_atendimento = (data) => {
 
     return new Promise(async (resolve, reject) => {
@@ -292,7 +358,7 @@ from atendimento a
 join equipe e on a.equipe_id  = e.id
 join equipe_usuario eu on eu.equipe_id  = e.id and eu.usuario_id = ${data.usuario_id}
 where a.status = 'fila'
-order by a.datahora_fila desc
+order by a.datahora_fila asc
 limit 1
 `;
 
@@ -351,6 +417,26 @@ const get_qtde_atendimentos_usuario = (data) => {
 
 };
 
+const get_qtde_fila_usuario = (data) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            let qry = `select count(1) as qtde
+            from atendimento a
+            join equipe_usuario eu on ( a.equipe_id  = eu.equipe_id )
+            where ( a.status = 'fila' ) and ( eu.usuario_id = ${data.usuario_id} )
+            `;
+            var ret = await pool.query(qry);
+            return resolve(ret.rows[0].qtde);
+        } catch (e) {
+            console.log("Error get_mensagens_atendimento", e.message);
+            return reject(e);
+        }
+    });
+
+};
+
 const get_contato_atendimento = (a) => {
 
     return new Promise(async (resolve, reject) => {
@@ -396,7 +482,7 @@ const add_message_in = (m) => {
             return resolve(true);
 
         } catch (e) {
-            console.log("Error get_atentimentos_expirados", e.message);
+            console.log("Error get_atendimentos_expirados", e.message);
             return reject(e);
         }
     });
@@ -432,7 +518,7 @@ const add_message_out = (m) => {
             return resolve(true);
 
         } catch (e) {
-            console.log("Error get_atentimentos_expirados", e.message);
+            console.log("Error get_atendimentos_expirados", e.message);
             return reject(e);
         }
     });
@@ -452,7 +538,7 @@ exports.limpar_atendimentos = limpar_atendimentos;
 exports.associa_atendimento_contato = associa_atendimento_contato;
 exports.atendimento_para_equipe = atendimento_para_equipe;
 exports.get_bot_configs = get_bot_configs;
-exports.get_atentimentos_expirados = get_atentimentos_expirados;
+exports.get_atendimentos_expirados = get_atendimentos_expirados;
 exports.encerrar_atendimento_timeout = encerrar_atendimento_timeout;
 exports.get_resposta_bot = get_resposta_bot;
 exports.add_message_in = add_message_in;
@@ -462,4 +548,7 @@ exports.get_proximo_atendimento = get_proximo_atendimento;
 exports.get_mensagens_atendimento = get_mensagens_atendimento;
 exports.get_contato_atendimento = get_contato_atendimento;
 exports.get_qtde_atendimentos_usuario = get_qtde_atendimentos_usuario;
+exports.get_qtde_fila_usuario = get_qtde_fila_usuario;
 exports.get_atendimento_atual_usuario = get_atendimento_atual_usuario;
+exports.get_lista_classificacoes = get_lista_classificacoes;
+exports.encerrar_atendimento = encerrar_atendimento;

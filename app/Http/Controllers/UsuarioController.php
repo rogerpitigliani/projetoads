@@ -71,7 +71,6 @@ class UsuarioController extends Controller
                 'min:4',
                 'max:100',
             ],
-            'email' => 'email'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -140,7 +139,7 @@ class UsuarioController extends Controller
                 'min:4',
                 'max:100',
             ],
-            'email' => 'email'
+
         ];
 
         if ($request->get('password')) {

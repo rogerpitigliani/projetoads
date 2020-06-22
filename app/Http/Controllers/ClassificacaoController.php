@@ -78,13 +78,21 @@ class ClassificacaoController extends Controller
         $cl->descricao = $request->get('descricao');
         $cl->tipo = $request->get('tipo');
         $cl->enabled = $request->get('enabled');
-        $cl->default_timeout = $request->get('default_timeout');
+        $cl->default_timeout = ($request->get('default_timeout') == true);
+        $cl->default_invalidas = ($request->get('default_invalidas') == true);
         $cl->save();
 
         if ($cl->default_timeout) {
             Classificacao::where('id', '<>', $cl->id)
                 ->update([
                     'default_timeout' => false
+                ]);
+        }
+
+        if ($cl->default_invalidas) {
+            Classificacao::where('id', '<>', $cl->id)
+                ->update([
+                    'default_invalidas' => false
                 ]);
         }
 
@@ -152,12 +160,20 @@ class ClassificacaoController extends Controller
         $classificacao->tipo = $request->get('tipo');
         $classificacao->enabled = ($request->get('enabled') == true);
         $classificacao->default_timeout = ($request->get('default_timeout') == true);
+        $classificacao->default_invalidas = ($request->get('default_invalidas') == true);
         $classificacao->save();
 
         if ($classificacao->default_timeout) {
             Classificacao::where('id', '<>', $classificacao->id)
                 ->update([
                     'default_timeout' => false
+                ]);
+        }
+
+        if ($classificacao->default_invalidas) {
+            Classificacao::where('id', '<>', $classificacao->id)
+                ->update([
+                    'default_invalidas' => false
                 ]);
         }
 

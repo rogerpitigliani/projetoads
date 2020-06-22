@@ -20,8 +20,15 @@ export default {
             });
 
             _this.sio.on('atualiza_status_fila', (data) => {
-                console.log("atualiza_status_fila", data);
-                this.fila_status = data;
+
+                _this.sio.emit(
+                    "get_qtde_fila_usuario",
+                    { usuario_id: _this.usuario_id },
+                    data => {
+                        _this.qtde_fila = data.qtde;
+                    }
+                );
+
             });
 
             _this.sio.on('nova_mensagem_recebida', (msg) => {

@@ -60,15 +60,13 @@ class UsuarioSeeder extends Seeder
             $e->equipe = "Suporte";
             $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
             $e->save();
-
-            $e->usuarios()->sync(1);
+            $e->usuarios()->sync([1, Usuario::where('login', '=', 'airton.santos')->first()->id]);
 
             $e = new Equipe();
             $e->equipe = "Comercial";
             $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
             $e->save();
-
-            $e->usuarios()->sync(1);
+            $e->usuarios()->sync([1, Usuario::where('login', '=', 'renata.silva')->first()->id]);
         }
     }
 }

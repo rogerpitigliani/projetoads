@@ -28,6 +28,7 @@ class CreateAtendimentosTable extends Migration
             $table->string("message_id", 200); // ID MENSAGENS
             $table->string("remote_id", 200); // ID REMOTO DO CLIENTE
             $table->bigInteger("classificacao_id")->nullable();
+            $table->text("observacoes")->nullable();
             $table->integer("invalidas")->default(0);
             $table->boolean("finalizado")->default(false);
             $table->timestamp("datahora_ultima_recebida")->useCurrent();

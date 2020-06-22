@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Atendimento;
+use App\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AtendimentoController extends Controller
 {
@@ -15,7 +17,8 @@ class AtendimentoController extends Controller
     public function index()
     {
         $titulo = "Atendimento";
-        return view('atendimento/atendimento', compact('titulo'));
+        $usuario = Usuario::with('equipes')->find(Auth::user()->id);
+        return view('atendimento/atendimento', compact('titulo', 'usuario'));
     }
 
     /**
