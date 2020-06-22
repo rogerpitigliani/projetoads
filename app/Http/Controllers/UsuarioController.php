@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -19,12 +20,19 @@ class UsuarioController extends Controller
     public function index(Request $request)
     {
         if ($request->get('datatype') == 'json') {
-            return response()->json(User::all());
+
+            if (!Auth::user()->admin) {
+                $users = User::where('admin', '=', false)->orderBy('id', 'asc')->get();
+                return response()->json($users);
+            } else {
+                return response()->json(User::all());
+            }
         } elseif ($request->get('datatype') == 'list') {
             $regs = User::select('id as value', 'login as text')->orderBy('login', 'asc')->get();
             return response()->json($regs);
         } else {
             $titulo = "Usuários";
+            $usuario = Usuario::where('id', '=', Auth::user()->id)->first();
             return view("usuario/usuario", compact('titulo'));
         }
     }

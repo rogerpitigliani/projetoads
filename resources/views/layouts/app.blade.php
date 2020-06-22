@@ -48,10 +48,13 @@
                             <a class="nav-link" href="{{ route('home') }}"><i class="fas fa-home"></i> Home</a>
                         </li>
 
+                        @if(Auth::user()->atendente)
                         <li class="nav-item  {{ (request()->segment(1) == 'atendimento') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('atendimento.index') }}"><i class="fas fa-comment"></i> Atendimento</a>
                         </li>
+                        @endif
 
+                        @if(Auth::user()->admin || Auth::user()->supervisor )
                         <li class="nav-item dropdown  {{ (request()->segment(1) == 'usuario') ? 'active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-users-cog"></i> Usuários
@@ -61,8 +64,19 @@
                               <a class="dropdown-item" href="{{ route('equipe.index') }}"><i class="fas fa-users"></i> Equipes</a>
                             </div>
                         </li>
+                        @endif
+                        @if(Auth::user()->admin || Auth::user()->supervisor )
+                        <li class="nav-item dropdown  {{ (request()->segment(1) == 'configs') ? 'active' : '' }}">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search"></i> Relatório
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="{{ route('relatorio.atendimentos.index') }}"><i class="fas fa-comment"></i> Atendimentos</a>
 
-
+                            </div>
+                        </li>
+                        @endif
+                        @if(Auth::user()->admin )
                         <li class="nav-item dropdown  {{ (request()->segment(1) == 'configs') ? 'active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-tools"></i> Configurações
@@ -73,6 +87,7 @@
                               <a class="dropdown-item" href="{{ route('classificacao.index') }}"><i class="fas fa-thumbtack"></i> Classificação Atendimento</a>
                             </div>
                         </li>
+                        @endif
 
                     </ul>
 

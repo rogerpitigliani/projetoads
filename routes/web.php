@@ -37,3 +37,8 @@ Route::group(['prefix' => 'atendimento', 'middleware' => ['auth']], function () 
     Route::resource('atendimento', 'AtendimentoController');
     // Route::resource('botconfig', 'BotConfigController');
 });
+
+Route::group(['prefix' => 'relatorio', 'as' => 'relatorio.', 'middleware' => ['auth']], function () {
+    Route::get('atendimentos', 'RelatorioController@atendimentos')->name('atendimentos.index');
+    Route::get('atendimentos/data', 'RelatorioController@atendimentosData')->name('atendimentos.data');
+});

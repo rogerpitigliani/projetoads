@@ -10,7 +10,10 @@ window.Vue = require('vue');
 
 import BootstrapVue from "bootstrap-vue";
 import Notifications from 'vue-notification';
+import moment from 'moment'
 
+Vue.prototype.moment = moment;
+moment.locale('pt-BR');
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
@@ -20,6 +23,8 @@ Vue.component('usuario-component', require('./components/UsuarioComponent.vue').
 Vue.component('classificacao-component', require('./components/ClassificacaoComponent.vue').default);
 Vue.component('equipe-component', require('./components/EquipeComponent.vue').default);
 Vue.component('atendimento-component', require('./components/AtendimentoComponent.vue').default);
+Vue.component('relatorio-atendimentos-component', require('./components/RelatorioAtendimentosComponent.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

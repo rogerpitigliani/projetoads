@@ -1,4 +1,5 @@
 /servico/config/default.json
+/servico/node_modules
 /node_modules
 /public/hot
 /public/storage
