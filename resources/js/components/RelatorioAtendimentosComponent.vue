@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-modal id="bv-modal-view" size="xl" scrollable ok-title="Fechar" ok-only>
+    <b-modal id="bv-modal-view" size="lg" scrollable ok-title="Fechar" ok-only>
       <template v-slot:modal-title>
         <i class="fas fa-eye"></i> Visualização Atendimento
       </template>
@@ -29,6 +29,7 @@
             <b-list-group-item
               class="d-flex align-items-center mgs-group-item-in"
               v-if="msg.direcao=='in'"
+              title="Recebida"
             >
               <b-avatar :src="msg.photo_uri" class="mr-3"></b-avatar>
               <span class="mr-auto msg-content">
@@ -36,14 +37,15 @@
                 <span class="msg-horario">{{ msg.created_at }}</span>
               </span>
               <!-- <b-icon icon="arrow-down" class="mr-3 rounded-circle"></b-icon> -->
-              <b-avatar size="sm" variant="light" icon="arrow-down" class="mr-3"></b-avatar>
+              <b-avatar size="sm" variant="danger-outline" icon="arrow-down" class="mr-3"></b-avatar>
             </b-list-group-item>
 
             <b-list-group-item
               class="d-flex align-items-center mgs-group-item-out"
               v-if="msg.direcao=='out'"
+              title="Enviada"
             >
-              <b-avatar size="sm" variant="light" icon="arrow-up" class="mr-3"></b-avatar>
+              <b-avatar size="sm" variant="success-outline" icon="arrow-up" class="mr-3"></b-avatar>
               <span class="mr-auto msg-content-out text-right">
                 {{msg.content}}
                 <br />
@@ -497,13 +499,12 @@ export default {
 .msg-content {
   white-space: pre-line;
   width: 80%;
-
-  padding: 10px;
+  padding-left: 10px;
 }
 
 .msg-content-out {
   white-space: pre-line;
-  width: 90%;
+  width: 85%;
 }
 
 .msg-icon {
