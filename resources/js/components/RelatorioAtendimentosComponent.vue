@@ -14,7 +14,7 @@
                   label="Período"
                 >
                   <date-range-picker
-                    :date-range="filter_periodo"
+                    :date-range="filter.periodo"
                     @update="updateValues"
                     :locale-data="locale"
                     opens="right"
@@ -30,6 +30,19 @@
                   </date-range-picker>
                 </b-form-group>
               </b-col>
+              <b-col cols="4">
+                <b-form-group
+                  label-cols-sm="12"
+                  label-align-sm="right"
+                  label-size="sm"
+                  label-for="filterInput"
+                  label="Pesquisar/Protocolo"
+                >
+                  <b-input-group>
+                    <b-form-input v-model="filter.text" placeholder="Pesquisar"></b-form-input>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
             </b-row>
             <b-row>
               <b-col>
@@ -40,13 +53,13 @@
                   label-for="filterInput"
                 >
                   <b-input-group size="sm">
-                    <b-form-input v-model="filter_text" placeholder="Palavra / Mensagem"></b-form-input>
-                    <b-form-select v-model="filter_usuario_id" :options="lista_usuarios"></b-form-select>
+                    <b-form-select v-model="filter.equipe_id" :options="lista_equipes"></b-form-select>
+                    <b-form-select v-model="filter.usuario_id" :options="lista_usuarios"></b-form-select>
                     <b-form-select
-                      v-model="filter_classificacao_id"
+                      v-model="filter.classificacao_id"
                       :options="lista_classificacoes"
                     ></b-form-select>
-                    <b-form-select v-model="filter_canal" :options="lista_canais"></b-form-select>
+                    <b-form-select v-model="filter.canal" :options="lista_canais"></b-form-select>
 
                     <b-input-group-append>
                       <b-button pill variant="outline-primary" class="success" @click="filtrar">
@@ -78,13 +91,22 @@
               :current-page="currentPage"
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
+              show-empty
             >
+              <template v-slot:empty="scope">
+                <div class="text-center">Nenhum registro encontrado</div>
+              </template>
+
               <template v-slot:table-busy>
                 <div class="text-center text-primary my-2">
                   <b-spinner class="align-middle"></b-spinner>
                   <strong>Carregando...</strong>
                 </div>
               </template>
+
+              <template
+                v-slot:cell(datahora_inicio)="data"
+              >{{ moment(data.value, 'YYYY-MM-DD HH:mm:ss').format("DD/MM/YYYY HH:mm:ss") }}</template>
 
               <template v-slot:cell(admin)="row">
                 <div>
@@ -95,6 +117,21 @@
                     disabled
                     size="lg"
                   ></b-form-checkbox>
+                </div>
+              </template>
+
+              <template v-slot:cell(canal)="row">
+                <div v-if="row.item.canal == 'chat'">
+                  <i class="far fa-comment"></i> Chat/Site
+                </div>
+                <div v-if="row.item.canal == 'whatsapp'">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </div>
+                <div v-if="row.item.canal == 'telegram'">
+                  <i class="fab fa-telegram"></i> Telegram
+                </div>
+                <div v-if="row.item.canal == 'facebook'">
+                  <i class="fab fa-facebook"></i> Facebook
                 </div>
               </template>
 
@@ -125,10 +162,10 @@
               <template v-slot:cell(actions)="row">
                 <b-button
                   size="sm"
-                  @click="edit(row.item, row.index, $event.target)"
-                  title="Editar"
+                  @click="view(row.item, row.index, $event.target)"
+                  title="Visualizar"
                 >
-                  <i class="fas fa-edit"></i>
+                  <i class="fas fa-eye"></i>
                 </b-button>
               </template>
             </b-table>
@@ -141,7 +178,7 @@
               size="sm"
               @change="onPaginate"
             ></b-pagination>
-          </div>>
+          </div>
         </b-card>
       </b-col>
     </b-row>
@@ -154,7 +191,14 @@ import DateRangePicker from "vue2-daterange-picker";
 import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 
 export default {
-  props: ["titulo", "url_data", "usuario", "usuarios", "classificacoes"],
+  props: [
+    "titulo",
+    "url_data",
+    "usuario",
+    "usuarios",
+    "classificacoes",
+    "equipes"
+  ],
   components: {
     DateRangePicker
   },
@@ -168,25 +212,40 @@ export default {
       sortDesc: false,
       fields: [
         { key: "id", label: "ID", sortable: true, class: "column-id" },
-        { key: "datahora", label: "Data/Hora", sortable: true },
+        { key: "datahora_inicio", label: "Data/Hora", sortable: true },
         { key: "canal", label: "Canal", sortable: true },
-        { key: "usuario", label: "Atendente", sortable: true },
+        { key: "login", label: "Atendente", sortable: true },
+        { key: "equipe", label: "Equipe", sortable: true },
+        { key: "status", label: "Status", sortable: true },
         { key: "classificacao", label: "Classificacao", sortable: true },
+        { key: "protocolo", label: "Protocolo", sortable: true },
         { key: "actions", label: "", sortable: false, class: "column-action" }
       ],
       dataArray: [],
-      filter: null,
-      filter_usuario_id: null,
-      filter_classificacao_id: null,
-      filter_canal: "",
-      filter_text: "",
-      filter_date_range: null,
-      filter_periodo: {
-        startDate: this.moment().startOf("month"),
-        endDate: this.moment()
+      filter: {
+        usuario_id: null,
+        classificacao_id: null,
+        equipe_id: null,
+        canal: "",
+        text: "",
+        periodo: {
+          startDate: this.moment().startOf("month"),
+          endDate: this.moment()
+        }
       },
+      //filter_usuario_id: null,
+      //filter_classificacao_id: null,
+      //filter_equipe_id: null,
+      //filter_canal: "",
+      //filter_text: "",
+      //filter_date_range: null,
+      //filter_periodo: {
+      //  startDate: this.moment().startOf("month"),
+      //  endDate: this.moment()
+      //},
       lista_usuarios: [],
       lista_classificacoes: [],
+      lista_equipes: [],
       lista_canais: [
         { value: "", text: "Qualquer Canal" },
         { value: "whatsapp", text: "WhatsApp" },
@@ -236,70 +295,33 @@ export default {
     };
   },
   methods: {
+    view: function(row, index, e) {
+      console.log("ROW", row);
+    },
     updateValues: function(data) {
       console.log("Data Alterada: ", data);
+      this.filter.periodo = data;
     },
 
     limparFiltros: async function() {
-      this.filter_usuario_id = null;
-      this.filter_classificacao_id = null;
-      this.filter_canal = "";
-      this.filter_text = "";
+      this.filter.usuario_id = null;
+      this.filter.classificacao_id = null;
+      this.filter.equipe_id = null;
+      this.filter.canal = "";
+      this.filter.text = "";
+      this.filter.periodo.startDate = this.moment().startOf("month");
+      this.filter.periodo.endDate = this.moment();
       await this.$nextTick();
       this.filtrar();
     },
     filtrar: function() {
-      alert("Filtrar");
+      this.loadData();
     },
 
     onPaginate: function(page) {
       console.log("Paginate", page);
     },
-    addnew: function() {
-      var _this = this;
-      _this.resetForm();
-      _this.editando = true;
-    },
-    edit: async function(item, index, event) {
-      var _this = this;
-      _this.resetForm();
-      _this.editando = true;
-      _this.loading = true;
-      var url = this.url_show.replace("ID", item.id);
-      var res = await axios.get(url, {});
-      res.data.password = null;
-      res.data.password_confirmation = null;
-      _this.form = res.data;
-      _this.loading = false;
-    },
-    onSubmit: async function(e) {
-      var _this = this;
 
-      try {
-        var response = null;
-        if (_this.form.id) {
-          var url = _this.url_update.replace("ID", _this.form.id);
-          var response = await axios.put(url, _this.form);
-        } else {
-          var url = _this.url_store;
-          var response = await axios.post(url, _this.form);
-        }
-
-        if (response.data.status == "OK") {
-          _this.editando = false;
-          _this.loadData();
-          _this.$msgSuccess(response.data.message);
-        } else {
-          _this.$msgError(response.data.message);
-        }
-      } catch (errors) {
-        if (errors.response.status == 422) {
-          _this.errors = errors.response.data;
-          _this.$msgError("Erros encontrados");
-          // console.log("ERRORS", _this.errors);
-        }
-      }
-    },
     onReset: function() {
       console.log("Reset Form");
     },
@@ -331,7 +353,18 @@ export default {
     loadData: async function() {
       var _this = this;
       _this.loading = true;
-      var res = await axios.get(_this.url_data + "?datatype=json", {});
+      var params = _this.filter;
+
+      params.periodo.startDate = _this
+        .moment(params.periodo.startDate)
+        .format("YYYY-MM-DD 00:00:00");
+      params.periodo.endDate = _this
+        .moment(params.periodo.endDate)
+        .format("YYYY-MM-DD 23:59:59");
+
+      console.log("Params", params);
+
+      var res = await axios.post(_this.url_data, params);
       _this.dataArray = res.data;
       _this.loading = false;
     }
@@ -340,6 +373,11 @@ export default {
     var _this = this;
     _this.form_vazio = _this.form;
     _this.usuario_logado = JSON.parse(_this.usuario);
+    _this.lista_equipes = [
+      ...[{ value: null, text: "Equipe" }],
+      ...JSON.parse(_this.equipes)
+    ];
+
     _this.lista_usuarios = [
       ...[{ value: null, text: "Usuário" }],
       ...JSON.parse(_this.usuarios)
@@ -356,14 +394,15 @@ export default {
       return this.items.length;
     },
     items() {
-      return this.filter
-        ? this.dataArray.filter(
-            item =>
-              item.login.includes(this.filter) ||
-              item.nome.includes(this.filter) ||
-              item.id == this.filter
-          )
-        : this.dataArray;
+      return this.dataArray;
+      //   return this.filter
+      //     ? this.dataArray.filter(
+      //         item =>
+      //           item.canal.includes(this.filter) ||
+      //           item.nome.includes(this.filter) ||
+      //           item.id == this.filter
+      //       )
+      //     : this.dataArray;
     }
   }
 };
