@@ -1,5 +1,61 @@
 <template>
   <b-container>
+    <b-modal id="bv-modal-view" size="xl" scrollable ok-title="Fechar" ok-only>
+      <template v-slot:modal-title>
+        <i class="fas fa-eye"></i> Visualização Atendimento
+      </template>
+
+      <b-container fluid>
+        <b-card>
+          <b-card-title>Atendimento em {{ view_atendimento.datahora_inicio }}</b-card-title>
+          <table class="table">
+            <tr>
+              <th>Nome Cliente:</th>
+              <td>{{ view_atendimento.full_name }}</td>
+              <th>Protocolo:</th>
+              <td>{{ view_atendimento.protocolo }}</td>
+            </tr>
+            <tr>
+              <th>Atendente:</th>
+              <td>{{ view_atendimento.login }}</td>
+              <th>Canal:</th>
+              <td>{{ view_atendimento.canal }}</td>
+            </tr>
+          </table>
+        </b-card>
+
+        <template v-for="msg in view_mensagens">
+          <b-list-group :key="msg.id">
+            <b-list-group-item
+              class="d-flex align-items-center mgs-group-item-in"
+              v-if="msg.direcao=='in'"
+            >
+              <b-avatar :src="msg.photo_uri" class="mr-3"></b-avatar>
+              <span class="mr-auto msg-content">
+                {{msg.content}}
+                <span class="msg-horario">{{ msg.created_at }}</span>
+              </span>
+              <!-- <b-icon icon="arrow-down" class="mr-3 rounded-circle"></b-icon> -->
+              <b-avatar size="sm" variant="light" icon="arrow-down" class="mr-3"></b-avatar>
+            </b-list-group-item>
+
+            <b-list-group-item
+              class="d-flex align-items-center mgs-group-item-out"
+              v-if="msg.direcao=='out'"
+            >
+              <b-avatar size="sm" variant="light" icon="arrow-up" class="mr-3"></b-avatar>
+              <span class="mr-auto msg-content-out text-right">
+                {{msg.content}}
+                <br />
+                <span class="msg-horario">{{ msg.created_at }}</span>
+              </span>
+              <b-avatar variant="primary" src="/img/bot_imagem.png" class="mr-3"></b-avatar>
+            </b-list-group-item>
+          </b-list-group>
+        </template>
+      </b-container>
+    </b-modal>
+
     <b-row>
       <b-col>
         <b-card :header="titulo" header-bg-variant="primary" header-text-variant="white">
@@ -194,6 +250,7 @@ export default {
   props: [
     "titulo",
     "url_data",
+    "url_mensagens",
     "usuario",
     "usuarios",
     "classificacoes",
@@ -204,6 +261,8 @@ export default {
   },
   data() {
     return {
+      view_mensagens: [],
+      view_atendimento: [],
       loading: false,
       currentPage: 1,
       perPage: 10,
@@ -295,8 +354,16 @@ export default {
     };
   },
   methods: {
-    view: function(row, index, e) {
-      console.log("ROW", row);
+    view: async function(row, index, e) {
+      var _this = this;
+      _this.view_mensagens = [];
+      _this.view_atendimento = [];
+      _this.$bvModal.show("bv-modal-view");
+      let url = _this.url_mensagens.replace(":ID", row.id);
+      var res = await axios.get(url, {});
+      _this.view_mensagens = res.data.messages;
+      _this.view_atendimento = res.data.atendimento = res.data.atendimento;
+      console.log(url, res);
     },
     updateValues: function(data) {
       console.log("Data Alterada: ", data);
@@ -407,3 +474,60 @@ export default {
   }
 };
 </script>
+<style scoped>
+.msg-chat.msg-in {
+  background-color: aquamarine;
+  color: #000;
+}
+.msg-chat.msg-out {
+  background-color: coral;
+  color: #000;
+}
+
+.chat-message p {
+  line-height: 18px;
+  margin: 0;
+  padding: 0;
+  white-space: pre-line;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.msg-content {
+  white-space: pre-line;
+  width: 80%;
+
+  padding: 10px;
+}
+
+.msg-content-out {
+  white-space: pre-line;
+  width: 90%;
+}
+
+.msg-icon {
+  width: 30px;
+  height: 30px;
+  margin: 30px 0px;
+}
+.mgs-group-item-in {
+  border-color: #e86f6f;
+  margin-bottom: 5px;
+  border-radius: 20px;
+  color: #d30f20;
+  font-family: Tahoma;
+}
+
+.mgs-group-item-out {
+  border-color: #3f9652;
+  margin-bottom: 5px;
+  border-radius: 20px;
+  color: #05330f;
+  font-family: Tahoma;
+}
+.msg-horario {
+  font-size: 8px;
+  color: #727171;
+}
+</style>

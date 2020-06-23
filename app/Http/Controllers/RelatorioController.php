@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Atendimento;
 use App\Classificacao;
+use App\Contato;
 use App\Equipe;
+use App\Mensagem;
 use App\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +31,44 @@ class RelatorioController extends Controller
         // return response()->json($equipes);
 
         return view('relatorio/atendimentos', compact('titulo', 'usuario', 'usuarios', 'classificacoes', 'equipes'));
+    }
+
+    public function atendimentoMensagens(Request $request, $id)
+    {
+
+        $a = DB::table("atendimento as a")
+            ->select(
+                "a.*",
+                DB::raw("COALESCE(c.full_name,'desconhecido') as full_name"),
+                DB::raw("COALESCE(u.login,'desconhecido') as login")
+            )
+            ->leftJoin('usuario as u', 'a.usuario_id', '=', 'u.id')
+            ->leftJoin('contato as c', 'a.contato_id', '=', 'c.id')
+            ->where("a.id", "=", $id)
+            ->first();
+
+        $c = null;
+        if ($a->contato_id) {
+            $c = Contato::find($a->contato_id);
+        }
+
+
+        $msgs = DB::table('mensagem as m')
+            ->select(
+                'm.*',
+                DB::raw("COALESCE(c.photo_uri,'/img/bot_imagem.png') as photo_uri"),
+                DB::raw("COALESCE(c.full_name,'desconhecido') as full_name")
+            )
+            ->leftJoin('atendimento as a', 'm.atendimento_id', '=', 'a.id')
+            ->leftJoin('contato as c', 'a.contato_id', '=', 'c.id')
+            ->where('atendimento_id', '=', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+        return response()->json([
+            "messages" => $msgs,
+            "atendimento" => $a,
+            "contato" => $c
+        ]);
     }
 
     public function atendimentosData(Request $request)

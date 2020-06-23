@@ -8,7 +8,8 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+
 import Notifications from 'vue-notification';
 import moment from 'moment'
 
@@ -67,6 +68,7 @@ Vue.prototype.$msgWarning = function (msg) {
 }
 
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons)
 Vue.use(Notifications);
 
 const app = new Vue({

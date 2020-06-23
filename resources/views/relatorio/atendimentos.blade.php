@@ -8,6 +8,7 @@
         classificacoes="{{ json_encode($classificacoes) }}"
         equipes="{{ json_encode($equipes) }}"
         url_data="{{ route('relatorio.atendimentos.data') }}"
+        url_mensagens="{{ route('relatorio.atendimento.mensagens',':ID') }}"
         sort_by="id"
     ></relatorio-atendimentos-component>
 @endsection

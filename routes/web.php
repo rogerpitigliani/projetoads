@@ -41,4 +41,5 @@ Route::group(['prefix' => 'atendimento', 'middleware' => ['auth']], function () 
 Route::group(['prefix' => 'relatorio', 'as' => 'relatorio.', 'middleware' => ['auth']], function () {
     Route::get('atendimentos', 'RelatorioController@atendimentos')->name('atendimentos.index');
     Route::post('atendimentos/data', 'RelatorioController@atendimentosData')->name('atendimentos.data');
+    Route::get('atendimento/mensagens/{id}', 'RelatorioController@atendimentoMensagens')->name('atendimento.mensagens');
 });
