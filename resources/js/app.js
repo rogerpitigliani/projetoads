@@ -9,6 +9,8 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import VueApexCharts from 'vue-apexcharts'
+
 
 import Notifications from 'vue-notification';
 import moment from 'moment'
@@ -25,6 +27,15 @@ Vue.component('classificacao-component', require('./components/ClassificacaoComp
 Vue.component('equipe-component', require('./components/EquipeComponent.vue').default);
 Vue.component('atendimento-component', require('./components/AtendimentoComponent.vue').default);
 Vue.component('relatorio-atendimentos-component', require('./components/RelatorioAtendimentosComponent.vue').default);
+Vue.component('dashboard-admin-component', require('./components/DashboardAdminComponent.vue').default);
+
+
+
+Vue.component('card-info-component', require('./components/CardInfoComponent.vue').default);
+Vue.component('card-info-icon-component', require('./components/CardInfoIconComponent.vue').default);
+
+Vue.component('grafico-donut-component', require('./components/GraficoDonutComponent.vue').default);
+Vue.component('grafico-barra-component', require('./components/GraficoBarrasComponent.vue').default);
 
 
 /**
@@ -69,7 +80,12 @@ Vue.prototype.$msgWarning = function (msg) {
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons)
+
 Vue.use(Notifications);
+
+Vue.use(VueApexCharts)
+
+Vue.component('apexchart', VueApexCharts)
 
 const app = new Vue({
     el: '#app',

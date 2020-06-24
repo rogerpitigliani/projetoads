@@ -27,6 +27,22 @@ class UsuarioSeeder extends Seeder
             'atendente' => true,
         ]);
 
+        $eq = Equipe::first();
+        if (!$eq) {
+
+            $e = new Equipe();
+            $e->equipe = "Suporte";
+            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
+            $e->save();
+            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id]);
+
+            $e = new Equipe();
+            $e->equipe = "Comercial";
+            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
+            $e->save();
+            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id]);
+        }
+
         $faker = Faker::create();
 
         $users = [
@@ -41,9 +57,11 @@ class UsuarioSeeder extends Seeder
         ];
 
 
+
+
         // for ($i = 0; $i < 45; $i++) {
         foreach ($users as $i => $us) {
-            $u = new User();
+            $u = new Usuario();
             $u->name = $us["name"];
             $u->email = $us["email"];
             $u->login = $us["login"];
@@ -51,22 +69,9 @@ class UsuarioSeeder extends Seeder
             $u->atendente = true;
             $u->supervisor = (($i % 3) == 0);
             $u->save();
-        }
 
-        $eq = Equipe::first();
-        if (!$eq) {
-
-            $e = new Equipe();
-            $e->equipe = "Suporte";
-            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
-            $e->save();
-            $e->usuarios()->sync([1, Usuario::where('login', '=', 'airton.santos')->first()->id]);
-
-            $e = new Equipe();
-            $e->equipe = "Comercial";
-            $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
-            $e->save();
-            $e->usuarios()->sync([1, Usuario::where('login', '=', 'renata.silva')->first()->id]);
+            $e = Equipe::inRandomOrder()->first();
+            $u->equipes()->sync([$e->id]);
         }
     }
 }

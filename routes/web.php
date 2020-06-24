@@ -21,6 +21,10 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// Route::group(['middleware' => ['auth']], function () {
+//     Route::get('dashboard', 'DashController@index')->name('dashboard');
+// });
+
 
 Route::group(['prefix' => 'usuario', 'middleware' => ['auth']], function () {
     Route::resource('usuario', 'UsuarioController');

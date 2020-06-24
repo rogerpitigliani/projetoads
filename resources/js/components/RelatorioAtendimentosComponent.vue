@@ -7,7 +7,7 @@
 
       <b-container fluid>
         <b-card>
-          <b-card-title>Atendimento em {{ view_atendimento.datahora_inicio }}</b-card-title>
+          <b-card-title>Atendimento em {{ moment(view_atendimento.datahora_inicio,"YYYY-MM-DD HH:mm:ss").format("DD/MM/YYYY HH:mm:ss") }}</b-card-title>
           <table class="table">
             <tr>
               <th>Nome Cliente:</th>
@@ -34,7 +34,9 @@
               <b-avatar :src="msg.photo_uri" class="mr-3"></b-avatar>
               <span class="mr-auto msg-content">
                 {{msg.content}}
-                <span class="msg-horario">{{ msg.created_at }}</span>
+                <span
+                  class="msg-horario"
+                >{{ moment(msg.created_at,"YYYY-MM-DD HH:mm:ss").format("DD/MM/YYYY HH:mm:ss") }}</span>
               </span>
               <!-- <b-icon icon="arrow-down" class="mr-3 rounded-circle"></b-icon> -->
               <b-avatar size="sm" variant="danger-outline" icon="arrow-down" class="mr-3"></b-avatar>
@@ -49,7 +51,9 @@
               <span class="mr-auto msg-content-out text-right">
                 {{msg.content}}
                 <br />
-                <span class="msg-horario">{{ msg.created_at }}</span>
+                <span
+                  class="msg-horario"
+                >{{ moment(msg.created_at,"YYYY-MM-DD HH:mm:ss").format("DD/MM/YYYY HH:mm:ss") }}</span>
               </span>
               <b-avatar variant="primary" src="/img/bot_imagem.png" class="mr-3"></b-avatar>
             </b-list-group-item>
