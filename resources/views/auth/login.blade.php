@@ -12,13 +12,11 @@
 
             <div class="card border-primary ">
 
-                <div class="card-header bg-primary text-white text-center">{{ __('Acesso') }} - {{ env('APP_NAME') }}</div>
+                <div class="card-header bg-primary text-white text-center">{{ env('APP_NAME') }} - Login</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-
-
                         <div class="form-group row">
                             <label for="login" class="col-md-4 col-form-label text-md-right">{{ __('Usuário') }}</label>
 
@@ -71,9 +69,9 @@
                         </div>
                     </form>
                 </div>
-                <div class="alert alert-warning text-center" role="alert">
+                {{--  <div class="alert alert-warning text-center" role="alert">
                     Demonstrativo, utilize Login: <strong>admin</strong> / Senha: <strong>10203040</strong>
-                </div>
+                </div>  --}}
 
             </div>
         </div>

@@ -20,12 +20,21 @@ class UsuarioSeeder extends Seeder
         DB::table('usuario')->insert([
             'name' => 'Roger Pitigliani',
             'email' => 'rogerwinter@gmail.com',
-            'password' =>  Hash::make('10203040'),
+            'password' =>  Hash::make('admin12345'),
             'login' => 'admin',
             'admin' => true,
             'supervisor' => true,
             'atendente' => true,
         ]);
+
+        $u = new Usuario();
+        $u->name = "Usuario Atendente";
+        $u->email = "atendente@chat.in";
+        $u->password = Hash::make('atendente12345');
+        $u->login = "atendente";
+        $u->atendente = false;
+        $u->save();
+
 
         $eq = Equipe::first();
         if (!$eq) {
@@ -34,13 +43,13 @@ class UsuarioSeeder extends Seeder
             $e->equipe = "Suporte";
             $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
             $e->save();
-            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id]);
+            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id, Usuario::where('login', '=', 'atendente')->first()->id]);
 
             $e = new Equipe();
             $e->equipe = "Comercial";
             $e->usuario_id = Usuario::where('login', '=', 'admin')->first()->id;
             $e->save();
-            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id]);
+            $e->usuarios()->sync([Usuario::where('login', '=', 'admin')->first()->id, Usuario::where('login', '=', 'atendente')->first()->id]);
         }
 
         $faker = Faker::create();
@@ -65,7 +74,7 @@ class UsuarioSeeder extends Seeder
             $u->name = $us["name"];
             $u->email = $us["email"];
             $u->login = $us["login"];
-            $u->password = Hash::make('10203040');
+            $u->password = Hash::make('1020304050');
             $u->atendente = true;
             $u->supervisor = (($i % 3) == 0);
             $u->save();
