@@ -32,7 +32,7 @@ class UsuarioSeeder extends Seeder
         $u->email = "atendente@chat.in";
         $u->password = Hash::make('atendente12345');
         $u->login = "atendente";
-        $u->atendente = false;
+        $u->atendente = true;
         $u->save();
 
 
