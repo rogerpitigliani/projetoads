@@ -40,10 +40,12 @@ class RelatorioController extends Controller
             ->select(
                 "a.*",
                 DB::raw("COALESCE(c.full_name,'desconhecido') as full_name"),
-                DB::raw("COALESCE(u.login,'desconhecido') as login")
+                DB::raw("COALESCE(u.login,'desconhecido') as login"),
+                DB::raw("COALESCE(cl.classificacao,'Não Classificado') as classificacao")
             )
             ->leftJoin('usuario as u', 'a.usuario_id', '=', 'u.id')
             ->leftJoin('contato as c', 'a.contato_id', '=', 'c.id')
+            ->leftJoin('classificacao as cl', 'a.classificacao_id', '=', 'cl.id')
             ->where("a.id", "=", $id)
             ->first();
 

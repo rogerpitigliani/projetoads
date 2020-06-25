@@ -138,16 +138,16 @@ const get_atendimento_by_remoteid = (message) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            // console.log(message);
+            console.log("get_atendimento_by_remoteid", message);
 
             var canal = "chat";
 
-            if (message.from.indexOf('messenger.gw') < 0) {
+            if (message.from.indexOf('messenger.gw') > -1) {
                 canal = "facebook";
-            } else if (message.from.indexOf('telegram.gw') < 0) {
+            } else if (message.from.indexOf('telegram.gw') > -1) {
                 canal = "telegram";
-            } else if (message.from.indexOf('whatsapp.gw') < 0) {
-                canal = "telegram";
+            } else if (message.from.indexOf('whatsapp.gw') > -1) {
+                canal = "whatsapp";
             }
 
             if (message.direcao == 'in') {

@@ -91,7 +91,45 @@
             <i class="fas fa-comments"></i>
             {{ titulo_atendimento }}
           </b-card-header>
-          <div id="messages_content" ref="msgcontent">
+
+          <div id="messages_content" ref="msgcontent" class="scroll">
+            <template v-for="msg in mensagens">
+              <b-list-group :key="msg.id">
+                <b-list-group-item
+                  class="d-flex align-items-center mgs-group-item-in"
+                  v-if="msg.direcao=='in'"
+                  title="Recebida"
+                >
+                  <b-avatar :src="msg.photo_uri" class="mr-3"></b-avatar>
+                  <span class="mr-auto msg-content">
+                    {{msg.content}}
+                    <span
+                      class="msg-horario"
+                    >{{ moment(msg.created_at,"YYYY-MM-DD HH:mm:ss").format("DD/MM/YYYY HH:mm:ss") }}</span>
+                  </span>
+                  <b-avatar size="sm" variant="danger-outline" icon="arrow-down" class="mr-3"></b-avatar>
+                </b-list-group-item>
+
+                <b-list-group-item
+                  class="d-flex align-items-center mgs-group-item-out"
+                  v-if="msg.direcao=='out'"
+                  title="Enviada"
+                >
+                  <b-avatar size="sm" variant="success-outline" icon="arrow-up" class="mr-3"></b-avatar>
+                  <span class="mr-auto msg-content-out text-right">
+                    {{msg.content}}
+                    <br />
+                    <span
+                      class="msg-horario"
+                    >{{ moment(msg.created_at,"YYYY-MM-DD HH:mm:ss").format("DD/MM/YYYY HH:mm:ss") }}</span>
+                  </span>
+                  <b-avatar variant="primary" src="/img/bot_imagem.png" class="mr-3"></b-avatar>
+                </b-list-group-item>
+              </b-list-group>
+            </template>
+          </div>
+          <!--
+          <div id="messages_content" ref="msgcontent" class="scroll">
             <ul class="chat-list">
               <template v-for="msg in mensagens">
                 <li class="in" v-if="msg.direcao == 'in'" v-bind:key="msg.id">
@@ -100,7 +138,6 @@
                   </div>
                   <div class="chat-body">
                     <div class="chat-message">
-                      <!-- <h5>{{ msg.name }}</h5> -->
                       <p>{{ msg.content }}</p>
                     </div>
                   </div>
@@ -111,14 +148,13 @@
                   </div>
                   <div class="chat-body">
                     <div class="chat-message">
-                      <!-- <h5>{{ msg.name }}</h5> -->
                       <p>{{ msg.content }}</p>
                     </div>
                   </div>
                 </li>
               </template>
             </ul>
-          </div>
+          </div>-->
           <b-row>
             <b-col>&nbsp;</b-col>
           </b-row>
@@ -132,6 +168,7 @@
                   wrap="<br>"
                   size="lg"
                   placeholder="Digite a mensagem aqui!"
+                  :disabled="!em_atendimento"
                 ></b-form-textarea>
                 <b-button
                   variant="primary"
@@ -146,7 +183,7 @@
             </b-col>
           </b-row>
 
-          <b-row>
+          <!-- <b-row>
             <b-col>
               <div class="text-right">
                 <b-button type="link" variant="light" title="Anexar">
@@ -157,7 +194,7 @@
                 </b-button>
               </div>
             </b-col>
-          </b-row>
+          </b-row>-->
           <b-row>
             <b-col sm="10"></b-col>
           </b-row>
@@ -194,6 +231,11 @@ export default {
     };
   },
   methods: {
+    scrollToEnd() {
+      var container = document.querySelector(".scroll");
+      var scrollHeight = container.scrollHeight;
+      container.scrollTop = scrollHeight;
+    },
     confirmaEncerramento: function(e) {
       var _this = this;
       if (!_this.classificacao_id) {
@@ -216,6 +258,8 @@ export default {
     },
     encerrarAtendimento: async function() {
       var _this = this;
+      _this.classificacao_id = null;
+      _this.observacoes = "";
 
       _this.sio.emit(
         "get_lista_classificacoes",
@@ -283,13 +327,13 @@ export default {
       //   _this.titulo + " Pedro (51) 98246-4536 - ** SUPORTE **";
 
       await _this.$nextTick();
-      _this.scrollToBottom();
+      // _this.scrollToBottom();
 
-      setTimeout(async function() {
-        await _this.$nextTick();
-        _this.scrollToBottom();
-        console.log("Rolando");
-      }, 1200);
+      //   setTimeout(async function() {
+      //     await _this.$nextTick();
+      //     _this.scrollToBottom();
+      //     console.log("Rolando");
+      //   }, 1200);
     },
     sendMessage: async function() {
       var _this = this;
@@ -309,25 +353,31 @@ export default {
           }
         });
 
-        _this.shouldScroll =
-          _this.$refs.msgcontent.scrollTop +
-            _this.$refs.msgcontent.clientHeight ===
-          _this.$refs.msgcontent.scrollHeight;
-        if (!_this.shouldScroll) {
-          await _this.$nextTick();
-          _this.scrollToBottom();
-          setTimeout(function() {
-            _this.scrollToBottom();
-          }, 1000);
-        }
+        // _this.shouldScroll =
+        //   _this.$refs.msgcontent.scrollTop +
+        //     _this.$refs.msgcontent.clientHeight ===
+        //   _this.$refs.msgcontent.scrollHeight;
+        // if (!_this.shouldScroll) {
+        //   await _this.$nextTick();
+        //   _this.scrollToBottom();
+        //   setTimeout(function() {
+        //     _this.scrollToBottom();
+        //   }, 1000);
+        // }
       }
     },
-    scrollToBottom: function() {
-      console.log("scrollTop", this.$refs.msgcontent.scrollTop);
-      console.log("clientHeight", this.$refs.msgcontent.clientHeight);
-      console.log("scrollHeight", this.$refs.msgcontent.scrollHeight);
-      this.$refs.msgcontent.scrollTop =
-        this.$refs.msgcontent.scrollHeight + 120;
+    // scrollToBottom: function() {
+    //   console.log("scrollTop", this.$refs.msgcontent.scrollTop);
+    //   console.log("clientHeight", this.$refs.msgcontent.clientHeight);
+    //   console.log("scrollHeight", this.$refs.msgcontent.scrollHeight);
+    //   this.$refs.msgcontent.scrollTop =
+    //     this.$refs.msgcontent.scrollHeight + 120;
+    // },
+    checkSessao: async function() {
+      let res = await axios.get("/sessao", {});
+      if (res.data.status == "offline") {
+        window.location.href = "/home";
+      }
     }
   },
 
@@ -335,15 +385,6 @@ export default {
     fila_qtd: function() {
       var _this = this;
       var x = 0;
-
-      //   Object.keys(_this.fila_status).forEach(key => {
-      //     for (var i = 0; i < _this.usuario_equipes; i++) {
-      //       if (_this.usuario_equipes[i].id == _this.fila_status[key].equipe_id) {
-      //         x += parseInt(_this.fila_status[key].qtde);
-      //       }
-      //     }
-      //   });
-
       _this.btn_receber = x > 0 ? true : false;
       return x;
     },
@@ -358,12 +399,6 @@ export default {
     _this.usuario_logado = JSON.parse(_this.usuario);
     _this.usuario_equipes = _this.usuario_logado.equipes;
 
-    setTimeout(async function() {
-      await _this.$nextTick();
-      _this.scrollToBottom();
-      //   console.log("Rolando");
-    }, 1200);
-
     (async function() {
       _this.connect_io(
         _this.socket_host,
@@ -375,16 +410,82 @@ export default {
       await _this.$nextTick();
       _this.refresh_dados();
     })();
+
+    _this.checkSessao();
+    setInterval(function() {
+      _this.checkSessao();
+    }, 5000);
+
+    this.scrollToEnd();
+  },
+  updated() {
+    this.scrollToEnd();
   }
 };
 </script>
 <style scoped>
-#messages_content {
-  /* height: 400px; */
-  height: calc(50vh - 20px);
-  overflow-y: scroll;
+.msg-chat.msg-in {
+  background-color: aquamarine;
+  color: #000;
+}
+.msg-chat.msg-out {
+  background-color: coral;
+  color: #000;
 }
 
+/* .chat-message p {
+  line-height: 18px;
+  margin: 0;
+  padding: 0;
+  white-space: pre-line;
+  text-align: left;
+  padding-top: 0px;
+  padding-bottom: 0px;
+} */
+
+.msg-content {
+  white-space: pre-line;
+  width: 80%;
+  padding-left: 10px;
+}
+
+.msg-content-out {
+  white-space: pre-line;
+  width: 85%;
+}
+
+.msg-icon {
+  width: 30px;
+  height: 30px;
+  margin: 30px 0px;
+}
+.mgs-group-item-in {
+  border-color: #e86f6f;
+  margin-bottom: 5px;
+  border-radius: 20px;
+  color: #d30f20;
+  font-family: Tahoma;
+}
+
+.mgs-group-item-out {
+  border-color: #3f9652;
+  margin-bottom: 5px;
+  border-radius: 20px;
+  color: #05330f;
+  font-family: Tahoma;
+}
+.msg-horario {
+  font-size: 8px;
+  color: #727171;
+}
+
+/* AQUI COMECA ANTIGO */
+
+#messages_content {
+  height: calc(50vh - 80px);
+  overflow-y: scroll;
+}
+/*
 .chat-list {
   padding: 0;
   font-size: 0.8rem;
@@ -483,10 +584,8 @@ export default {
   -webkit-border-radius: 0.3rem 0.3rem 0 0;
   -moz-border-radius: 0.3rem 0.3rem 0 0;
   border-radius: 0.3rem 0.3rem 0 0;
-}
-/* body {
-  height: 100%;
 } */
+/*
 .border-left-primary {
   border-left: 0.25rem solid #4e73df !important;
 }
@@ -526,9 +625,9 @@ export default {
 ::after,
 ::before {
   box-sizing: border-box;
-}
+} */
 .rowinfo {
-  padding-top: 10px !important;
+  padding-top: 0px !important;
   padding-bottom: 10px !important;
 }
 

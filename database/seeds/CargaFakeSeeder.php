@@ -21,7 +21,7 @@ class CargaFakeSeeder extends Seeder
 
         $faker = Faker\Factory::create();
 
-        for ($d = 0; $d < 10; $d++) {
+        for ($d = 0; $d < 60; $d++) {
 
             $dt = date("Y-m-d", strtotime("-{$d} day"));
             $qtd = $faker->numberBetween(3, 20);

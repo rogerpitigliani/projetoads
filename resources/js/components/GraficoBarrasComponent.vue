@@ -1,20 +1,37 @@
 <template>
   <div id="chart">
-    <apexchart type="bar" width="400" height="350" :options="chartOptions" :series="series"></apexchart>
+    <apexchart
+      ref="chart"
+      type="bar"
+      width="400"
+      height="350"
+      :options="chartOptions"
+      :series="series"
+    ></apexchart>
   </div>
 </template>
 
 <script>
 // import ApexCharts from "apexcharts";
 export default {
+  props: ["title"],
   mounted() {
     console.log("Component mounted.");
+  },
+  methods: {
+    updateChart: function(data) {
+      this.series[0].data = data.series;
+      this.$refs.chart.updateOptions({
+        labels: data.labels,
+        xaxis: { categories: data.labels }
+      });
+    }
   },
   data() {
     return {
       series: [
         {
-          data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
+          data: []
         }
       ],
       chartOptions: {
@@ -24,7 +41,7 @@ export default {
           width: 400
         },
         title: {
-          text: "Graph Barras",
+          text: this.title,
           align: "left"
         },
         plotOptions: {
@@ -38,19 +55,11 @@ export default {
         dataLabels: {
           enabled: false
         },
+        noData: {
+          text: "Nenhum Registro"
+        },
         xaxis: {
-          categories: [
-            "South Korea",
-            "Canada",
-            "United Kingdom",
-            "Netherlands",
-            "Italy",
-            "France",
-            "Japan",
-            "United States",
-            "China",
-            "Germany"
-          ]
+          categories: []
         }
       }
     };

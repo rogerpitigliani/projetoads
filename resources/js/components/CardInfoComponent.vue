@@ -4,7 +4,7 @@
       <!---->
       <!---->
       <!---->
-      <div class="icone" style="position: absolute; float: right; top: 10px; right: 10px; ">
+      <div class="icone" style="position: absolute; float: right; top: 3px; right: 6px; ">
         <i v-if="icon" :class="iconeclass"></i>
       </div>
       <div class="va-card__body va-card__body--padding-top">
@@ -21,7 +21,7 @@ export default {
   computed: {
     iconeclass: function() {
       if (this.icon) {
-        return `${this.icon} fa-2x`;
+        return `${this.icon} fa-1x`;
       }
     },
     style: function() {
@@ -37,6 +37,15 @@ export default {
           break;
         case "success":
           return "color: rgb(255, 255, 255); background: linear-gradient(to right, rgb(102, 229, 181), rgb(41, 224, 105)); box-shadow: rgba(52, 56, 85, 0.25) 0px 2px 3px 0px;";
+          break;
+        case "fila":
+          return "color: rgb(255, 255, 255); background: linear-gradient(to right, rgb(232, 112, 19), rgb(232, 112, 19)); box-shadow: rgba(52, 56, 85, 0.25) 0px 2px 3px 0px;";
+          break;
+        case "chat":
+          return "color: rgb(255, 255, 255); background: linear-gradient(to right, rgb(8, 153, 134), rgb(8, 153, 134)); box-shadow: rgba(52, 56, 85, 0.25) 0px 2px 3px 0px;";
+          break;
+        case "atendida":
+          return "color: rgb(255, 255, 255); background: linear-gradient(to right, rgb(8, 255, 24), rgb(8, 255, 24)); box-shadow: rgba(52, 56, 85, 0.25) 0px 2px 3px 0px;";
           break;
         default:
           return "color: rgb(255, 255, 255); background: linear-gradient(to right, rgb(102, 229, 181), rgb(41, 224, 105)); box-shadow: rgba(52, 56, 85, 0.25) 0px 2px 3px 0px;";
@@ -75,5 +84,10 @@ export default {
   flex-grow: 0;
   max-width: 100%;
   margin-bottom: 5px;
+}
+.display-2 {
+  font-size: 3.5rem;
+  font-weight: 300;
+  line-height: 1.2;
 }
 </style>

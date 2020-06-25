@@ -19,6 +19,7 @@ class ClassificacaoSeeder extends Seeder
             $cl->classificacao = "Timeout Resposta";
             $cl->descricao = "Timeout Resposta Bot";
             $cl->default_timeout = true;
+            $cl->default_invalidas = false;
             $cl->enabled = true;
             $cl->save();
 
@@ -26,7 +27,7 @@ class ClassificacaoSeeder extends Seeder
             $cl->classificacao = "Invalidas Excedidas";
             $cl->descricao = "Invalidas Excedidas";
             $cl->default_timeout = false;
-            $cl->default_invalidas = false;
+            $cl->default_invalidas = true;
             $cl->enabled = true;
             $cl->save();
 

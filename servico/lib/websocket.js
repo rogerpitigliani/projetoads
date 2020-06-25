@@ -58,6 +58,8 @@ io_chat.on('connection', function (socket) {
             };
         }
 
+        await atualiza_fila_status();
+
         fn({
             atendimento: a,
             mensagens: mensagens,
@@ -84,6 +86,11 @@ io_chat.on('connection', function (socket) {
         console.log("WEB SOLICITOU ENCERRAR ATENDIMENTO", a);
         var res = await db.encerrar_atendimento(a);
         if (res) {
+
+            var bc = await db.get_bot_configs();
+            var msgencerra = bc.msg_encerramento.replace(':PROTOCOLO', a.protocolo);
+            await chat.sendMessage({ type: "text/plain", content: msgencerra, to: a.remote_id, atendimento_id: a.id });
+            await atualiza_fila_status();
             fn({ status: 'OK', message: 'Atendimento encerrado' });
         } else {
             fn({ status: 'ERR', message: 'Ops! Algo deu errado. Atendimento nao foi finalizado.' });
@@ -181,11 +188,8 @@ const get_rooms = () => {
 
 const atualiza_fila_status = () => {
     return new Promise(async (resolve, reject) => {
-        // let filas = await db.get_status_filas();
         var rooms = await get_rooms();
-        // console.log("status filas", filas, rooms);
         for (var i = 0; i < rooms.length; i++) {
-            //  console.log("Emitindo atualiza_status_fila", rooms[i]);
             io_chat.to(rooms[i]).emit('atualiza_status_fila', {});
         }
         return resolve(true);

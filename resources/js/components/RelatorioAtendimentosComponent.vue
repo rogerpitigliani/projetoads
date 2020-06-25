@@ -21,6 +21,18 @@
               <th>Canal:</th>
               <td>{{ view_atendimento.canal }}</td>
             </tr>
+            <tr>
+              <th>Classificação:</th>
+              <td>{{ view_atendimento.classificacao }}</td>
+              <th>&nbsp;</th>
+              <td>&nbsp;</td>
+            </tr>
+            <tr>
+              <th>Observação:</th>
+              <td colspan="3">
+                <span style=" white-space: pre-line;">{{ view_atendimento.observacoes }}</span>
+              </td>
+            </tr>
           </table>
         </b-card>
 
@@ -274,7 +286,7 @@ export default {
       perPage: 10,
       totalRows: 0,
       sortBy: this.sort_by || "id",
-      sortDesc: false,
+      sortDesc: true,
       fields: [
         { key: "id", label: "ID", sortable: true, class: "column-id" },
         { key: "datahora_inicio", label: "Data/Hora", sortable: true },
@@ -368,7 +380,7 @@ export default {
       let url = _this.url_mensagens.replace(":ID", row.id);
       var res = await axios.get(url, {});
       _this.view_mensagens = res.data.messages;
-      _this.view_atendimento = res.data.atendimento = res.data.atendimento;
+      _this.view_atendimento = res.data.atendimento;
       console.log(url, res);
     },
     updateValues: function(data) {

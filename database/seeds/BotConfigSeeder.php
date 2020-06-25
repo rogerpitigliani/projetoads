@@ -21,11 +21,11 @@ class BotConfigSeeder extends Seeder
             $bc = new BotConfig();
             $bc->msg_inicial = "ProjetoADS.\nEste é um sistema de demonstração!";
             $bc->msg_menu  = "Por favor selecione o assunto desejado: \n1 - Suporte \n2 - Comercial";
-            $bc->msg_invalid = "Ops! Opção invalida, tente novamente!";
-            $bc->msg_encaminhamento = "OK, entendi! Encaminhando para equipe de atendimento.";
-            $bc->msg_encerramento = "Obrigado pelo contato, seu protocolo de atendimento é :PROTOCOLO.\nAté mais.";
+            $bc->msg_invalid = "Ops!\nOpção invalida, tente novamente!";
+            $bc->msg_encaminhamento = "OK, entendi!\nEncaminhando para equipe de atendimento.";
+            $bc->msg_encerramento = "Obrigado pelo contato,\nseu protocolo de atendimento é :PROTOCOLO.\nAté mais.";
             $bc->msg_encerramento_tentativas = "Ops!, Tentativas excedidas... :( \nEncerrando Atendimento..\nTente novamente mais tarde...";
-            $bc->msg_encerramento_timeout = "Infelizmente você demorou para responder.Vou encerrar esse atendimento, mas qualquer coisa me chame novamente.\nAté mais!";
+            $bc->msg_encerramento_timeout = "Infelizmente você demorou para responder.\nVou encerrar esse atendimento, mas qualquer coisa me chame novamente.\nAté mais!";
             $bc->timeout_encerra = 45;
             $bc->save();
 

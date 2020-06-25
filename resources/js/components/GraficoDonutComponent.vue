@@ -1,32 +1,44 @@
 <template>
   <div id="chart">
-    <apexchart type="donut" width="500" :options="chartOptions" :series="series"></apexchart>
+    <apexchart ref="chart" type="donut" width="500" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>
 
 <script>
 // import ApexCharts from "apexcharts";
 export default {
+  props: ["title"],
+
   mounted() {
     console.log("Component mounted.");
   },
+  methods: {
+    updateChart: function(data) {
+      this.series = data.series;
+      this.$refs.chart.updateOptions({ labels: data.labels });
+    }
+  },
   data() {
     return {
-      series: [44, 55, 13, 43, 22],
+      series: [],
       chartOptions: {
         chart: {
           width: "100%",
           type: "pie"
         },
         title: {
-          text: "Graph Donut",
+          text: this.title,
           align: "left"
         },
         legend: {
           show: true,
           position: "bottom"
         },
-        labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
+        noData: {
+          text: "Nenhum Registro"
+        },
+        // labels: ["1", "2", "3"],
+        labels: [],
         responsive: [
           {
             breakpoint: 480,

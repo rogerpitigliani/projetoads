@@ -12,7 +12,7 @@
 
             <div class="card border-primary ">
 
-                <div class="card-header bg-primary text-white text-center">{{ __('Acesso - Sistema Atendimento Chat') }}</div>
+                <div class="card-header bg-primary text-white text-center">{{ __('Acesso') }} - {{ env('APP_NAME') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">

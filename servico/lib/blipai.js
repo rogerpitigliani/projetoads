@@ -77,7 +77,9 @@ const init = () => {
 
     client.addMessageReceiver(true, async function (message) {
 
+
         if (message.type == 'application/vnd.lime.chatstate+json') return true;
+        if (message.type !== 'text/plain') return true;
 
         console.log("Mensagem Recebida", message);
 

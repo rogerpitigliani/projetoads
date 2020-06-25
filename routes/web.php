@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,10 +21,17 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
-// Route::group(['middleware' => ['auth']], function () {
-//     Route::get('dashboard', 'DashController@index')->name('dashboard');
-// });
+Route::get('/sessao', function () {
+    if (Auth::guest()) {
+        return response()->json(["status" => "offline"]);
+    } else {
+        return response()->json(["status" => "online"]);
+    }
+})->name("sessao.check");
+Route::group(['middleware' => ['auth']], function () {
+    Route::post('dashboard', 'HomeController@index')->name('dashboard');
+    Route::any('dashboard/data', 'DashController@data')->name('dashboard.data');
+});
 
 
 Route::group(['prefix' => 'usuario', 'middleware' => ['auth']], function () {
