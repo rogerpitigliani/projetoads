@@ -25,6 +25,7 @@ moment.locale('pt-BR');
 Vue.component('usuario-component', require('./components/UsuarioComponent.vue').default);
 Vue.component('classificacao-component', require('./components/ClassificacaoComponent.vue').default);
 Vue.component('equipe-component', require('./components/EquipeComponent.vue').default);
+Vue.component('botconfig-component', require('./components/BotConfigComponent.vue').default);
 Vue.component('atendimento-component', require('./components/AtendimentoComponent.vue').default);
 Vue.component('relatorio-atendimentos-component', require('./components/RelatorioAtendimentosComponent.vue').default);
 Vue.component('dashboard-admin-component', require('./components/DashboardAdminComponent.vue').default);

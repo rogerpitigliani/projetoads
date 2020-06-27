@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\BotConfig;
+use App\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BotConfigController extends Controller
 {
@@ -14,8 +16,15 @@ class BotConfigController extends Controller
      */
     public function index()
     {
+
+        // if (!Auth::user()->admin  && !Auth::user()->supervisor) {
+        //     return response()->redirectToRoute('home');
+        // }
+
         $titulo = "Configurações de Atendimento BOT";
-        return view('configs/botconfig', compact('titulo'));
+        $usuario = Usuario::find(Auth::user()->id);
+        $botconfig = BotConfig::orderBy("id", "desc")->first();
+        return view('configs/botconfig', compact('titulo', 'usuario', 'botconfig'));
     }
 
     /**
@@ -47,7 +56,6 @@ class BotConfigController extends Controller
      */
     public function show(BotConfig $botConfig)
     {
-        //
     }
 
     /**

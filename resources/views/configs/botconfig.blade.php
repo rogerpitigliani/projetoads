@@ -2,17 +2,13 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col">
-            <div class="card border-primary ">
-                <div class="card-header bg-primary text-white text-center">{{ $titulo }}</div>
-                <div class="card-body">
-
-                    <h3>Content...</h3>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    <botconfig-component
+        titulo="{{ $titulo }}"
+        url_update="{{ route('botconfig.update','ID') }}"
+        url_store="{{ route('botconfig.store') }}"
+        sort_by="id"
+        usuario="{{ json_encode($usuario) }}"
+        botconfig="{{ json_encode($botconfig) }}"
+    ></botconfig-component>
 </div>
 @endsection
