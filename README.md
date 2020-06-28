@@ -1,4 +1,7 @@
-# Sistema de Atendimento Chat Multicanal
+# Chat.in
+## Sistema de Atendimento Chat Multicanal
+
+![Chat.in](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/logo.png)
 
 ## Descrição
 Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado através de Bot e distribuição interna para equipes de atendentes.
@@ -12,12 +15,12 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 
 ## Stack Tecnológico 
 - Laravel
-- PHP 7.3
+- PHP 7.4
 - Node 10
-- VueJS
-- PostgreSQL
+- VueJS 2 
+- PostgreSQL 9.6
 - Socket.IO
-- Bootstrap
+- Bootstrap 4
 
 ## Documentação
 - [Canvas MVP](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/Canvas_MVP.pdf)
@@ -27,8 +30,7 @@ Sistema para atendimento Telegram, Facebook, WhatsApp e SiteChat automatizado at
 - [Arquitetura Aplicação](https://github.com/rogerpitigliani/projetoads/blob/master/documentacao/FluxoInternoAplicacao.png)
 
 ## Acesso ao Sistema - Demo
-- [projetoads.comunicall.com.br](http://projetoads.comunicall.com.br)
-- Login: admin / Senha: 10203040
+- [http://172.107.45.218:8888/](http://172.107.45.218:8888/)
 
 ## Autor
 - Roger Pitigliani
