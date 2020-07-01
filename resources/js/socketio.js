@@ -33,11 +33,12 @@ export default {
             });
 
             _this.sio.on('nova_mensagem_recebida', (msg) => {
+
+                if (msg.created_at == this.last_message_in_created_at) return false;
+                this.last_message_in_created_at = msg.created_at;
                 if (this.mensagens) {
-                    console.log("RECEIVED MSG", msg)
                     this.mensagens.push(msg);
                 }
-
             });
 
         },
