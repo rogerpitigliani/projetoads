@@ -82,7 +82,7 @@
                                 <i class="fas fa-tools"></i> Configurações
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="{{ route('apiconfig.index') }}"><i class="fas fa-cloud"></i> Api Configuração</a>
+                              {{--  <a class="dropdown-item" href="{{ route('apiconfig.index') }}"><i class="fas fa-cloud"></i> Api Configuração</a>  --}}
                               <a class="dropdown-item" href="{{ route('botconfig.index') }}"><i class="fas fa-robot"></i> Bot - Atendimento Inicial</a>
                               <a class="dropdown-item" href="{{ route('classificacao.index') }}"><i class="fas fa-thumbtack"></i> Classificação Atendimento</a>
                             </div>

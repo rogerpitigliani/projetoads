@@ -6,6 +6,7 @@ export default {
             sio: null,
             chat_atual: null,
             fila_status: [],
+            last_message_in_created_at: null,
         }
     },
     created: function () {
@@ -33,6 +34,7 @@ export default {
 
             _this.sio.on('nova_mensagem_recebida', (msg) => {
                 if (this.mensagens) {
+                    console.log("RECEIVED MSG", msg)
                     this.mensagens.push(msg);
                 }
 

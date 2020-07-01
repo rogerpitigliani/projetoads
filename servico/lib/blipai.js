@@ -94,25 +94,44 @@ const init = () => {
         // O Contato existe?
         if (a.status == 'new' && !a.contact_id) {
 
+
+            var ci = null;
             if (message.from.indexOf('0mn.io') < 0) {
-                let ci = await contactInfo(message.from);
+                ci = await contactInfo(message.from);
                 console.log(`Contato para ${message.from}`, a);
 
                 // Associa Contato ao Atendimento
                 if (ci) {
                     await db.associa_atendimento_contato(a, ci);
                 }
+            } else {
+                // CONTATO DE SITE
+                ci = await db.registra_contato({
+                    resource: {
+                        fullName: 'Contato via Site',
+                        identity: message.from,
+                        source: 'Site/Chat',
+                        photoUri: '/img/avatar_unknow.png',
+                    }
+                });
+
+                if (ci) {
+                    await db.associa_atendimento_contato(a, ci);
+                }
+
             }
+
+            console.log(ci);
 
         }
 
         if (a) {
             message.atendimento_id = a.id;
             message.contato_id = a.contato_id;
-            let add = await db.add_message_in(message);
-            if (add && a.status == 'chat') {
+            let msg = await db.add_message_in(message);
+            if (msg && a.status == 'chat') {
                 chat.nova_mensagem_recebida({
-                    msg: message,
+                    msg: msg,
                     usuario_id: a.usuario_id
                 });
             }
@@ -123,7 +142,19 @@ const init = () => {
 
         if (a.status == 'new') {
 
-            await sendMessage({ type: "text/plain", content: bc.msg_inicial + '\n' + bc.msg_menu, to: message.from, atendimento_id: a.id });
+            var saudacao = "Olá,\n";
+
+            if (a.canal != 'chat' && ci) {
+                saudacao = `Olá ${ci.full_name}, \n`;
+            }
+
+
+            await sendMessage({
+                type: "text/plain",
+                content: saudacao + bc.msg_inicial + '\n' + bc.msg_menu,
+                to: message.from,
+                atendimento_id: a.id
+            });
             await db.atendimento_menu(a);
 
         } else if (a.status == 'menu') {
@@ -223,10 +254,12 @@ const sendMessage = (msg) => {
 
 
             await db.add_message_out(msg);
-
-
-
-
+            // if (msg) {
+            //     chat.nova_mensagem_recebida({
+            //         msg: msg,
+            //         usuario_id: a.usuario_id
+            //     });
+            // }
             return resolve(ret);
 
         } catch (e) {

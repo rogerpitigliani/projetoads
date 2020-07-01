@@ -152,9 +152,6 @@
                         <b-button type="submit" variant="outline-primary">
                           <i class="fas fa-check"></i> Confirmar
                         </b-button>
-                        <b-button type="button" @click="onCancel" variant="outline-danger">
-                          <i class="fas fa-times"></i> Cancelar
-                        </b-button>
                       </div>
                     </b-col>
                   </b-row>
@@ -260,13 +257,16 @@ export default {
           _this.editando = false;
           _this.loadData();
           _this.$msgSuccess(response.data.message);
+          _this.loading = false;
         } else {
           _this.$msgError(response.data.message);
+          _this.loading = false;
         }
       } catch (errors) {
         if (errors.response.status == 422) {
           _this.errors = errors.response.data;
           _this.$msgError("Erros encontrados");
+          _this.loading = false;
           // console.log("ERRORS", _this.errors);
         }
       }

@@ -88,8 +88,11 @@
       <b-col class="h-100">
         <b-card no-body>
           <b-card-header header-bg-variant="primary" header-text-variant="white" class="h-100">
-            <i class="fas fa-comments"></i>
-            {{ titulo_atendimento }}
+            <div v-if="em_atendimento" v-html="get_dados_contato"></div>
+
+            <span v-else>
+              <i class="fas fa-comments"></i> Disponível
+            </span>
           </b-card-header>
 
           <div id="messages_content" ref="msgcontent" class="scroll">
@@ -169,6 +172,7 @@
                   size="lg"
                   placeholder="Digite a mensagem aqui!"
                   :disabled="!em_atendimento"
+                  @keyup.enter.exact="sendMessage($event)"
                 ></b-form-textarea>
                 <b-button
                   variant="primary"
@@ -218,7 +222,10 @@ export default {
       em_atendimento: false,
       titulo_atendimento: "Disponível",
       mensagens: [],
-      atendimento: null,
+      atendimento: {
+        id: 0,
+        canal: "none"
+      },
       contato: null,
       qtde_atendimentos_hoje: 0,
       qtde_fila: 0,
@@ -343,7 +350,8 @@ export default {
           content: _this.message,
           to: _this.atendimento.remote_id,
           atendimento_id: _this.atendimento.id,
-          direcao: "out"
+          direcao: "out",
+          created_at: this.moment().format("YYYY-MM-DD HH:mm:ss")
         };
 
         _this.sio.emit("send_message", msg, data => {
@@ -382,6 +390,44 @@ export default {
   },
 
   computed: {
+    get_dados_contato: function() {
+      var icone = "";
+      if (this.atendimento) {
+        switch (this.atendimento.canal) {
+          case "telegram":
+            icone = ` - Telegram <i class="fab fa-telegram"></i>`;
+            break;
+          case "facebook":
+            icone = ` - Facebook <i class="fab fa-facebook"></i>`;
+            break;
+          case "whatsapp":
+            icone = ` - Facebook <i class="fab fa-whatsapp"></i>`;
+            break;
+          case "chat":
+            icone = ` - Chat <i class="fas fa-comment"></i>`;
+            break;
+        }
+      }
+
+      return `<i class="fas fa-comments"></i> Atendimento - Nome: ${this.contato.full_name}${icone}`;
+      //   <span
+      //     v-if="atendimento.canal == 'whatsap'"
+      //   >
+      //     WhatsApp
+      //
+      //   </span>
+      //   <span v-if="atendimento.canal == 'telegram'">
+      //     Telegram
+      //     <i class="fab fa-telegram"></i>
+      //   </span>
+      //   <span v-if="atendimento.canal == 'chat'">
+      //     Chat/Site
+      //
+      //   </span>
+      //   <span v-if="atendimento.canal == 'facebook'">
+      //
+      //   </span>
+    },
     fila_qtd: function() {
       var _this = this;
       var x = 0;

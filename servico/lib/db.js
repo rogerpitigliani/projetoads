@@ -96,6 +96,8 @@ const atendimento_encerra_invalidas = (a) => {
 const registra_contato = (c) => {
     return new Promise(async (resolve, reject) => {
 
+        console.log("REGISTRANDO CONTATO", c);
+
         try {
             let res = await pool.query(`SELECT * FROM contato WHERE identity = '${c.resource.identity}' LIMIT 1`);
             if (res.rows.length > 0) {
@@ -475,11 +477,13 @@ const add_message_in = (m) => {
                     '${m.content}',
                     CURRENT_TIMESTAMP::timestamp(0),
                     CURRENT_TIMESTAMP::timestamp(0)
-            )`;
+            )
+            RETURNING * `;
 
             var ret = await pool.query(qry);
             // console.log(ret);
-            return resolve(true);
+            if (ret.rows.length == 0) return resolve(false);
+            return resolve(ret.rows[0]);
 
         } catch (e) {
             console.log("Error get_atendimentos_expirados", e.message);
@@ -511,11 +515,13 @@ const add_message_out = (m) => {
                     '${m.content}',
                     CURRENT_TIMESTAMP::timestamp(0),
                     CURRENT_TIMESTAMP::timestamp(0)
-            )`;
+            )
+            RETURNING * `;
 
             var ret = await pool.query(qry);
             // console.log(ret);
-            return resolve(true);
+            if (ret.rows.length == 0) return resolve(false);
+            return resolve(ret.rows[0]);
 
         } catch (e) {
             console.log("Error get_atendimentos_expirados", e.message);
