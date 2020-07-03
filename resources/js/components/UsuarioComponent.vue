@@ -398,7 +398,7 @@ export default {
         ? this.dataArray.filter(
             item =>
               item.login.includes(this.filter) ||
-              item.nome.includes(this.filter) ||
+              item.name.includes(this.filter) ||
               item.id == this.filter
           )
         : this.dataArray;

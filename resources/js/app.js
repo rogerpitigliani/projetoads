@@ -46,6 +46,11 @@ Vue.component('grafico-barra-component', require('./components/GraficoBarrasComp
  */
 
 
+String.prototype.includes = function () {
+    'use strict';
+    return String.prototype.indexOf.apply(this, arguments) !== -1;
+};
+
 Vue.prototype.$eventBus = new Vue();
 
 Vue.prototype.$msgSuccess = function (msg) {

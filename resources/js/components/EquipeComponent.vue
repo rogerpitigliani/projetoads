@@ -429,11 +429,7 @@ export default {
     items() {
       return this.filter
         ? this.dataArray.filter(
-            item =>
-              item.equipe.includes(this.filter) ||
-              item.estrategia.includes(this.filter) ||
-              item.empresa.includes(this.filter) ||
-              item.id == this.filter
+            item => item.equipe.includes(this.filter) || item.id == this.filter
           )
         : this.dataArray;
     }
