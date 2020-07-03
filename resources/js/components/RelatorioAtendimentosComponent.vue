@@ -293,7 +293,7 @@ export default {
         { key: "canal", label: "Canal", sortable: true },
         { key: "login", label: "Atendente", sortable: true },
         { key: "equipe", label: "Equipe", sortable: true },
-        { key: "status", label: "Status", sortable: true },
+        // { key: "status", label: "Status", sortable: true },
         { key: "classificacao", label: "Classificacao", sortable: true },
         { key: "protocolo", label: "Protocolo", sortable: true },
         { key: "actions", label: "", sortable: false, class: "column-action" }
