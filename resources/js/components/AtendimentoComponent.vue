@@ -103,7 +103,7 @@
                   v-if="msg.direcao=='in'"
                   title="Recebida"
                 >
-                  <b-avatar :src="msg.photo_uri" class="mr-3"></b-avatar>
+                  <b-avatar :src="contato.photo_uri" class="mr-3"></b-avatar>
                   <span class="mr-auto msg-content">
                     {{msg.content}}
                     <span
